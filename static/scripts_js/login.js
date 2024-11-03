@@ -25,3 +25,7 @@ function login() {
     })
     .catch(error => console.error('Error:', error));
 }
+
+function route_createAccount() {
+  window.location.href = "/create_account";
+}

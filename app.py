@@ -201,6 +201,7 @@ def login():
         cursor = conn.cursor()
         cursor.execute(query, (email, password))
         user = cursor.fetchone()
+        #Close the database connection
         cursor.close()
         conn.close()
 
@@ -210,6 +211,63 @@ def login():
         else:
             # Login failed, send a failure message
             return jsonify({"success": False, "message": "Invalid email or password."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+### Create a New Account
+@app.route('/create_account')
+def create_account():
+    return render_template('createUser.html')
+
+@app.route('/create_user', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    email = data.get('email')
+    password = data.get('password')
+    phone_number = data.get('phone_number')
+
+    #Verify that each element is not empty
+    if not (first_name):
+         return jsonify({"success": False, "message": "First name not completed."})
+    
+    if not (last_name):
+         return jsonify({"success": False, "message": "Last name not completed."})
+
+    if not (email):
+         return jsonify({"success": False, "message": "Email not completed."})
+    
+    if not (password):
+         return jsonify({"success": False, "message": "Password not completed."})
+
+    #If all fields are completed, proceed with opening the connection to the database
+    try:
+        # Connect to the database
+        conn = odbc.connect(connection_string)
+        cursor = conn.cursor()
+
+        # Check if email already exists
+        email_check_query = "SELECT 1 FROM Users WHERE Email = ?;"
+        cursor.execute(email_check_query, (email,))
+        if cursor.fetchone():
+            return jsonify({"success": False, "message": "Email already exists."})
+
+        # Insert the new user
+        insert_query = """
+        INSERT INTO Users (FirstName, LastName, Email, Password, PhoneNumber)
+        VALUES (?, ?, ?, ?, ?);
+        """
+        cursor.execute(insert_query, (
+            first_name, last_name, email, password, phone_number
+        ))
+        conn.commit()
+
+        #Close the database connection
+        cursor.close()
+        conn.close()
+
+        return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
