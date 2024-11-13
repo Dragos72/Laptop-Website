@@ -62,9 +62,11 @@ except Exception as e:
 def login_page():
     return render_template('index.html')
 
+'''
 @app.route('/mainPage')
 def main_page():
     return render_template('main_page.html')
+'''
 
 @app.route('/schema')
 def get_schema():
@@ -219,6 +221,11 @@ def login():
 def create_account():
     return render_template('createUser.html')
 
+@app.route('/catalog')
+def catalog():
+    # You may fetch categories and laptop data from your database here
+    return render_template('catalog.html')
+
 @app.route('/create_user', methods=['POST'])
 def create_user():
     data = request.get_json()
@@ -270,6 +277,42 @@ def create_user():
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
+    
+'''
+@app.route('/get_categories', methods=['GET'])
+def get_categories():
+    try:
+        conn = odbc.connect(connection_string)
+        query = "SELECT CategoryName FROM Categories;"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        categories = [row[0] for row in cursor.fetchall()]  # Retrieve category names
+        cursor.close()
+        conn.close()
+        
+        return jsonify({"success": True, "categories": categories})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+'''
+@app.route('/get_categories', methods=['GET'])
+def get_categories():
+    # Check if the request contains the correct custom header
+    if request.headers.get('X-Requested-With') != 'XMLHttpRequest':
+        return jsonify({"error": "Unauthorized access"}), 403
+
+    try:
+        conn = odbc.connect(connection_string)
+        query = "SELECT CategoryName FROM Categories;"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        categories = [row[0] for row in cursor.fetchall()]
+        cursor.close()
+        conn.close()
+
+        return jsonify(categories)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -6,7 +6,7 @@
 function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
-
+  
   fetch('/login', {
     method: 'POST',
     headers: {
@@ -18,7 +18,7 @@ function login() {
     .then(data => {
       if (data.success) {
         // Redirect to the main page if login is successful
-        window.location.href = "/mainPage";
+        window.location.href = "/catalog";
       } else {
         alert("Login failed: " + data.message);
       }

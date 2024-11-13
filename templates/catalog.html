@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalog Page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/catalog.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename='scripts_js/catalog.js') }}"></script>
+</head>
+<body>
+  <!-- Top Navigation Menu -->
+  <nav class="top-menu">
+    <div class="dropdown">
+      <button class="dropbtn" onclick="toggleDropdown()">Categories</button>
+      <div id="categoryDropdown" class="dropdown-content">
+        <!-- Category items will be populated here -->
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search for a laptop...">
+      <button onclick="searchLaptops()">Search</button>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a href="/catalog" class="menu-item active">Catalog</a>
+      <a href="/myaccount" class="menu-item">MyAccount</a>
+      <a href="/signout" class="menu-item">Sign out</a>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <div class="content">
+    <section class="catalog">
+      <div id="laptop-list">
+        <!-- Laptop items will be populated here -->
+        <div class="laptop-card">
+          <img src="{{ url_for('static', filename='images/sample-laptop.jpg') }}" alt="Laptop">
+          <h4>Model Name</h4>
+          <p>Brand: Brand Name</p>
+          <p>Other Information</p>
+          <button>Add to Cart</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
