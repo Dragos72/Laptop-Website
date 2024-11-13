@@ -69,10 +69,62 @@ function loadCategories() {
   .catch(error => console.error('Error:', error));
 }
 
+async function displayLaptops() {
+  try {
+    const response = await fetch('/get_laptops');
+    const laptops = await response.json();
+
+    const laptopList = document.getElementById('laptop-list');
+    laptopList.innerHTML = ''; // Clear existing content
+
+    let row;
+    laptops.forEach((laptop, index) => {
+      // Create a new row every 4 laptops
+      if (index % 3 === 0) {
+        row = document.createElement('div');
+        row.classList.add('row');
+        laptopList.appendChild(row);
+      }
+
+      // Create the laptop card
+      const laptopCard = document.createElement('div');
+      laptopCard.classList.add('laptop-card');
+
+      // Set laptop image
+      const img = document.createElement('img');
+      img.src = laptopImageUrl;
+      img.alt = laptop.model_name;
+      laptopCard.appendChild(img);
+
+      // Set model name
+      const modelName = document.createElement('h4');
+      modelName.innerText = laptop.model_name;
+      laptopCard.appendChild(modelName);
+
+      // Set price
+      const price = document.createElement('p');
+      price.innerText = `Price: ${laptop.price} Lei`;
+      laptopCard.appendChild(price);
+
+      // Add to cart button
+      const button = document.createElement('button');
+      button.innerText = 'Add to Cart';
+      laptopCard.appendChild(button);
+
+      // Append the laptop card to the row
+      row.appendChild(laptopCard);
+    });
+  } catch (error) {
+    console.error('Error fetching laptops:', error);
+  }
+}
+
+
 
 
 // Call loadCategories when the page loads
 document.addEventListener('DOMContentLoaded', loadCategories);
+document.addEventListener('DOMContentLoaded', displayLaptops);
 
 // Close the dropdown if the user clicks outside of it
 window.onclick = function(event) {

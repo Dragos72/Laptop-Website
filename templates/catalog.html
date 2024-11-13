@@ -35,16 +35,14 @@
   <div class="content">
     <section class="catalog">
       <div id="laptop-list">
-        <!-- Laptop items will be populated here -->
-        <div class="laptop-card">
-          <img src="{{ url_for('static', filename='images/sample-laptop.jpg') }}" alt="Laptop">
-          <h4>Model Name</h4>
-          <p>Brand: Brand Name</p>
-          <p>Other Information</p>
-          <button>Add to Cart</button>
-        </div>
+        <!-- Laptop items will be populated here by displayLaptops() -->
       </div>
     </section>
   </div>
+  <script>
+    const laptopImageUrl = "{{ url_for('static', filename='assets/laptop_pictures/asus 2.jpg') }}";
+  </script>
+
+
 </body>
 </html>

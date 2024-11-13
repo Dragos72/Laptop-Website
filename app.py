@@ -312,6 +312,22 @@ def get_categories():
         return jsonify(categories)
     except Exception as e:
         return jsonify({"error": str(e)})
+    
+
+@app.route('/get_laptops', methods=['GET'])
+def get_laptops():
+    try:
+        conn = odbc.connect(connection_string)
+        query = "SELECT ModelName, Price FROM Laptops;"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        laptops = [{"model_name": row[0], "price": row[1]} for row in cursor.fetchall()]
+        cursor.close()
+        conn.close()
+
+        return jsonify(laptops)
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 if __name__ == '__main__':

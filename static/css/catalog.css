@@ -100,21 +100,29 @@ body {
 /* Catalog Section */
 .catalog {
   display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.row {
+  display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
 
 .laptop-card {
-  width: calc(25% - 20px);
+  flex: 1 1 calc(25% - 20px);
   background-color: #fff;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   padding: 10px;
   text-align: center;
+  max-width: calc(25% - 20px);
 }
 
 .laptop-card img {
   width: 100%;
+  height: auto;
   border-radius: 5px;
 }
 
