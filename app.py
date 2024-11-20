@@ -58,9 +58,7 @@ except Exception as e:
 '''
 
 
-@app.route('/')
-def login_page():
-    return render_template('index.html')
+
 
 '''
 @app.route('/mainPage')
@@ -187,34 +185,7 @@ def welcome_user():
         return jsonify({"error": str(e)})
 
 
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
 
-    try:
-        conn = odbc.connect(connection_string)
-        query = """
-        SELECT FirstName, LastName
-        FROM Users
-        WHERE Email = ? AND Password = ?;
-        """
-        cursor = conn.cursor()
-        cursor.execute(query, (email, password))
-        user = cursor.fetchone()
-        #Close the database connection
-        cursor.close()
-        conn.close()
-
-        if user:
-            # Login successful, send a success response
-            return jsonify({"success": True, "first_name": user[0], "last_name": user[1]})
-        else:
-            # Login failed, send a failure message
-            return jsonify({"success": False, "message": "Invalid email or password."})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
 
 ### Create a New Account
 @app.route('/create_account')
