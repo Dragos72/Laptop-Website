@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, session
 import pypyodbc as odbc
 from app.services import get_db_connection  # Example helper function
-
 catalog_blueprint = Blueprint('catalog', __name__)
 
 
@@ -34,10 +33,10 @@ def get_categories():
 def get_laptops():
     try:
         conn = get_db_connection()
-        query = "SELECT ModelName, Price FROM Laptops;"
+        query = "SELECT LaptopID, ModelName, Price FROM Laptops;"
         cursor = conn.cursor()
         cursor.execute(query)
-        laptops = [{"model_name": row[0], "price": row[1]} for row in cursor.fetchall()]
+        laptops = [{"LaptopID": row[0], "ModelName": row[1], "Price": row[2]} for row in cursor.fetchall()]
         cursor.close()
         conn.close()
 
@@ -109,5 +108,41 @@ def filter_laptops():
 
         # Return the filtered laptops
         return jsonify({"success": True, "laptops": laptops})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+    
+@catalog_blueprint.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    """
+    This route adds a laptop to the cart by inserting a record into the CartLaptops table.
+    """
+    try:
+        data = request.json  # Get the JSON payload from the frontend
+        laptop_id = data.get('laptop_id')  # Extract the laptop ID from the request
+
+        # Ensure the user is logged in and has a CartID
+        cart_id = session.get('CartID')
+        if not cart_id:
+            return jsonify({"success": False, "message": "No cart associated with the user."}), 403
+
+        # Default quantity
+        quantity = 1
+
+        # Connect to the database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Insert the new record into the CartLaptops table
+        query = """
+        INSERT INTO CartLaptops (CartID, LaptopID, Quantity)
+        VALUES (?, ?, ?);
+        """
+        cursor.execute(query, (cart_id, laptop_id, quantity))
+        conn.commit()  # Commit the transaction
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"success": True, "message": "Laptop added to cart successfully!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

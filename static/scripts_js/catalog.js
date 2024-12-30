@@ -85,28 +85,52 @@ function displayLaptops(laptops) {
 
     // Set laptop image
     const img = document.createElement('img');
-    img.src = laptopImageUrl;
-    img.alt = laptop.model_name;
+    img.src = laptopImageUrl;; // Use a default image if no image is provided
+    img.alt = laptop.ModelName;
     laptopCard.appendChild(img);
 
     // Set model name
     const modelName = document.createElement('h4');
-    modelName.innerText = laptop.model_name;
+    modelName.innerText = laptop.ModelName;
     laptopCard.appendChild(modelName);
 
     // Set price
     const price = document.createElement('p');
-    price.innerText = `Price: ${laptop.price} Lei`;
+    price.innerText = `Price: ${laptop.Price} Lei`;
     laptopCard.appendChild(price);
 
     // Add to cart button
     const button = document.createElement('button');
     button.innerText = 'Add to Cart';
+    button.onclick = () => addToCart(laptop.LaptopID); // Pass the correct LaptopID
     laptopCard.appendChild(button);
 
     // Append the laptop card to the row
     row.appendChild(laptopCard);
   });
+}
+
+// Function to handle adding a laptop to the cart
+async function addToCart(laptopId) {
+  try {
+    const response = await fetch('/add_to_cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ laptop_id: laptopId }), // Pass LaptopID in the request body
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert('Laptop added to cart successfully!');
+    } else {
+      alert('Failed to add laptop to cart: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An unexpected error occurred. Please try again.');
+  }
 }
 
 async function searchLaptops() {

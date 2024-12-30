@@ -2,7 +2,8 @@ import pypyodbc as odbc
 
 def get_db_connection():
     DRIVER_NAME = 'SQL SERVER'
-    SERVER_NAME = 'DESKTOP-NEGON5B\SQLEXPRESS'
+    #SERVER_NAME = 'DESKTOP-NEGON5B\SQLEXPRESS'
+    SERVER_NAME = 'DRAGOS\SQLEXPRESS'
     DATABASE_NAME = 'Website_Database'
 
     connection_string = f"""
