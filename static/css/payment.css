@@ -1,0 +1,38 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .top-menu {
+    display: flex;
+    justify-content: flex-end;
+    background-color: #333;
+    padding: 10px 20px;
+  }
+  
+  .top-menu .menu-item {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+  }
+  
+  .top-menu .menu-item.active {
+    background-color: #4CAF50;
+    border-radius: 4px;
+  }
+  
+  .payment-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .payment-container h1 {
+    margin-bottom: 20px;
+  }
+  
+  .payment-container p {
+    font-size: 1.2em;
+    color: #555;
+  }
+  

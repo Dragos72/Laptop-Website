@@ -24,6 +24,20 @@ FROM Laptops
 WHERE ModelName LIKE '%Asus%';
 
 
+BEGIN TRANSACTION;
+
+-- Delete all rows from ShoppingCart first since it references Users
+DELETE FROM ShoppingCart;
+
+-- Delete all rows from Users
+DELETE FROM Users;
+
+-- Reset the primary key for both tables
+DBCC CHECKIDENT ('ShoppingCart', RESEED, 1); -- Reset ShoppingCart primary key to start at 1
+DBCC CHECKIDENT ('Users', RESEED, 1); -- Reset Users primary key to start at 1
+
+COMMIT;
+
 
 
 

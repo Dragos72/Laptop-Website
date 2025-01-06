@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_session import Session
+from .routes.catalog import catalog_blueprint
 
 def create_app():
     app = Flask(
@@ -25,5 +26,6 @@ def create_app():
     app.register_blueprint(login_blueprint)
     app.register_blueprint(catalog_blueprint)
     app.register_blueprint(create_user_blueprint)
+    #app.register_blueprint(catalog_blueprint)
 
     return app

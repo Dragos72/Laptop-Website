@@ -146,3 +146,59 @@ def add_to_cart():
         return jsonify({"success": True, "message": "Laptop added to cart successfully!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+    
+
+
+@catalog_blueprint.route('/get_cart_items', methods=['GET'])
+def get_cart_items():
+    """
+    Fetch all items in the user's cart and return their details.
+    """
+    try:
+        # Ensure the user is logged in and has a CartID
+        cart_id = session.get('CartID')
+        if not cart_id:
+            return jsonify({"success": False, "message": "No cart associated with the user."}), 403
+
+        # Connect to the database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Query to get cart items
+        query = """
+        SELECT L.ModelName, L.Price, CL.Quantity
+        FROM CartLaptops CL
+        JOIN Laptops L ON CL.LaptopID = L.LaptopID
+        WHERE CL.CartID = ?;
+        """
+        cursor.execute(query, [cart_id])
+
+        # Fetch and format the results
+        cart_items = [
+            {"model_name": row[0], "price": row[1], "quantity": row[2]}
+            for row in cursor.fetchall()
+        ]
+
+        cursor.close()
+        conn.close()
+
+        # Return the cart items as JSON
+        return jsonify({"success": True, "items": cart_items})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+
+@catalog_blueprint.route('/cart', methods=['GET'])
+def cart_page():
+    """
+    Render the cart page.
+    """
+    return render_template('cart.html')
+
+@catalog_blueprint.route('/payment', methods=['GET'])
+def payment_page():
+    """
+    Render the payment page.
+    """
+    return render_template('payment.html')
