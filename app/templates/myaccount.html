@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/myaccount.css') }}">
+</head>
+<body>
+  <nav class="top-menu">
+    <a href="/catalog" class="menu-item">Catalog</a>
+    <a href="/cart" class="menu-item">Cart</a>
+    <a href="/myaccount" class="menu-item active">My Account</a>
+    <a href="/signout" class="menu-item">Sign Out</a>
+  </nav>
+
+  <div class="myaccount-container">
+    <h1>My Account</h1>
+
+    <!-- User Information -->
+    <div class="user-info">
+      <h2>User Details</h2>
+      <p><strong>First Name:</strong> {{ user.FirstName }}</p>
+      <p><strong>Last Name:</strong> {{ user.LastName }}</p>
+      <p><strong>Email:</strong> {{ user.Email }}</p>
+    </div>
+
+    <!-- Addresses -->
+    <div class="address-section">
+      <h2>Addresses</h2>
+      {% if addresses %}
+        <ul class="address-list">
+          {% for address in addresses %}
+            <li>
+              <p><strong>Street:</strong> {{ address.Street }}</p>
+              <p><strong>Number:</strong> {{ address.Number }}</p>
+              <p><strong>City:</strong> {{ address.City }}</p>
+              <p><strong>Postal Code:</strong> {{ address.PostalCode }}</p>
+              <p><strong>Country:</strong> {{ address.Country }}</p>
+              <p><strong>Type:</strong> {{ address.AddressType }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No current addresses to display.</p>
+      {% endif %}
+      <button onclick="addAddress()">Add Address</button>
+    </div>
+  </div>
+
+  <script>
+    function addAddress() {
+      window.location.href = "/add_address";
+    }
+  </script>
+</body>
+</html>

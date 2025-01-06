@@ -1,8 +1,7 @@
-.payment-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
   }
   
   .top-menu {
@@ -23,20 +22,40 @@
     border-radius: 4px;
   }
   
-  .address-section,
-  .total-section {
-    margin-bottom: 20px;
+  .myaccount-container {
+    padding: 20px;
+  }
+  
+  .user-info, .address-section {
+    margin-bottom: 30px;
+  }
+  
+  h1, h2 {
     text-align: center;
   }
   
+  .address-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .address-list li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
   button {
-    margin-top: 20px;
-    padding: 10px 15px;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 1em;
   }
   
   button:hover {

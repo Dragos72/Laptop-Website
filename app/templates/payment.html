@@ -5,19 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Page</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/payment.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename='scripts_js/payment.js') }}"></script>
 </head>
 <body>
   <nav class="top-menu">
     <a href="/catalog" class="menu-item">Catalog</a>
     <a href="/cart" class="menu-item">Cart</a>
+    <a href="/payment" class="menu-item active">Payment</a>
     <a href="/myaccount" class="menu-item">My Account</a>
     <a href="/signout" class="menu-item">Sign Out</a>
   </nav>
 
   <div class="payment-container">
     <h1>Payment Page</h1>
-    <p>Please proceed with your payment to complete the order.</p>
-    <!-- Add payment form or instructions here -->
+
+    <!-- Total Amount -->
+    <div class="total-section">
+      <h2>Total: {{ total }} Lei</h2>
+      <input type="hidden" id="total-amount" value="{{ total }}">
+    </div>
+
+    <!-- Shipping Address Section -->
+    <div class="address-section">
+      <h2>Shipping Address</h2>
+      <label for="shipping-address">Select an Address:</label>
+      <select id="shipping-address" name="shipping_street" onchange="showAddressDetails('shipping')">
+        <option value="">-- Select --</option>
+        {% for address in shipping_addresses %}
+        <option value="{{ address.Street }}">{{ address.Street }}</option>
+        {% endfor %}
+      </select>
+      <div id="shipping-details" class="details"></div>
+    </div>
+
+    <!-- Billing Address Section -->
+    <div class="address-section">
+      <h2>Billing Address</h2>
+      <label for="billing-address">Select an Address:</label>
+      <select id="billing-address" name="billing_street" onchange="showAddressDetails('billing')">
+        <option value="">-- Select --</option>
+        {% for address in billing_addresses %}
+        <option value="{{ address.Street }}">{{ address.Street }}</option>
+        {% endfor %}
+      </select>
+      <div id="billing-details" class="details"></div>
+    </div>
+
+    <!-- Submit Button -->
+    <form method="POST" action="/submit_payment">
+      <input type="hidden" id="shipping-option" name="shipping_option" value="existing">
+      <input type="hidden" id="billing-option" name="billing_option" value="existing">
+      <input type="hidden" name="total_amount" value="{{ total }}">
+      <button type="submit" class="submit-payment">Submit Payment</button>
+    </form>
   </div>
 </body>
 </html>
