@@ -1,69 +1,140 @@
+/* General Styling */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
-  }
-  
-  h1 {
-    text-align: center;
-  }
-  
-  section {
-    margin-bottom: 40px;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 400px;
-  }
-  
-  button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f4f9; /* Light background */
+}
 
-  .query-section {
-    margin-bottom: 20px;
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  color: #333; /* Darker color for header */
+  font-size: 2.5rem;
+}
+
+/* Container Layout */
+.container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.left-section {
+  width: 60%;
+  padding-right: 20px;
+  background-color: #ffffff; /* White background */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.right-section {
+  width: 35%;
+  border-left: 2px solid #ccc;
+  padding-left: 20px;
+  background-color: #ffffff; /* White background */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* Forms and Input Styling */
+section h2 {
+  font-size: 1.5rem;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+form input,
+form select,
+form textarea,
+form button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+form button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+/* Statistics Section */
+.query-section label,
+.query-section select,
+.query-section input,
+.query-section button {
+  display: block;
+  margin: 10px 0;
+}
+
+.query-section button {
+  background-color: #28a745; /* Green button */
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.query-section button:hover {
+  background-color: #218838;
+}
+
+/* Query Results Styling */
+#query-results {
+  margin-top: 20px;
+}
+
+#results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+}
+
+#results-table th,
+#results-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+#results-table th {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+#results-table td {
+  background-color: #f9f9f9;
+}
+
+#results-table tr:nth-child(even) td {
+  background-color: #e9ecef; /* Alternating row color */
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  .query-section button {
-    background-color: green;
-    color: white;
-    border: none;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .query-section button:hover {
-    background-color: darkgreen;
-  }
-  
-  #query-results {
-    margin-top: 20px;
-  }
-  
-  #results-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  #results-table th, #results-table td {
-    border: 1px solid black;
-    padding: 8px;
-    text-align: left;
-  }
-  
-  #results-table th {
-    background-color: lightgray;
-  }
-  
+}

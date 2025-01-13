@@ -100,61 +100,126 @@ def add_laptop():
 
 @adminRoutes_blueprint.route('/admin/execute_query/<query_name>', methods=['GET'])
 def execute_query(query_name):
+    param = request.args.get('param', None)
+
     queries = {
-        "laptops_with_categories": """
-            SELECT L.ModelName, C.CategoryName
-            FROM Laptops L
-            JOIN Categories C ON L.CategoryID = C.CategoryID;
-        """,
-        "users_with_cart": """
-            SELECT U.FirstName, U.LastName, SC.CartID
-            FROM Users U
-            JOIN ShoppingCart SC ON U.UserID = SC.UserID;
-        """,
-        "laptops_in_cart": """
-            SELECT SC.CartID, L.ModelName, CL.Quantity
-            FROM CartLaptops CL
-            JOIN Laptops L ON CL.LaptopID = L.LaptopID
-            JOIN ShoppingCart SC ON CL.CartID = SC.CartID;
-        """,
-        "orders_with_users": """
-            SELECT O.OrderID, U.FirstName, U.LastName, O.TotalAmount
-            FROM Orders O
-            JOIN Users U ON O.UserID = U.UserID;
-        """,
-        "laptops_with_brands": """
+
+        #Simple
+
+        "laptops_by_brand": """
             SELECT L.ModelName, B.BrandName
             FROM Laptops L
-            JOIN Brands B ON L.BrandID = B.BrandID;
+            JOIN Brands B ON L.BrandID = B.BrandID
+            WHERE B.BrandName = ?;
         """,
-        "user_addresses": """
-            SELECT U.FirstName, U.LastName, A.Street, A.City, A.Country
-            FROM Addresses A
-            JOIN Users U ON A.UserID = U.UserID;
+        "users_by_cart_count": """
+            SELECT U.FirstName, U.LastName, COUNT(SC.CartID) AS CartCount
+            FROM Users U
+            JOIN ShoppingCart SC ON U.UserID = SC.UserID
+            GROUP BY U.FirstName, U.LastName
+            HAVING COUNT(SC.CartID) > ?;
         """,
-        "most_expensive_laptop": """
-            SELECT ModelName, Price
-            FROM Laptops
-            WHERE Price = (SELECT MAX(Price) FROM Laptops);
+        "total_orders_by_user":"""
+        SELECT U.FirstName, U.LastName, COUNT(O.OrderID) AS OrderCount, SUM(O.TotalAmount) AS TotalAmount
+        FROM Users U
+        JOIN Orders O ON U.UserID = O.UserID
+        GROUP BY U.FirstName, U.LastName
+        HAVING SUM(O.TotalAmount) > ?;
         """,
-        "top_customers": """
-            SELECT U.FirstName, U.LastName, O.TotalAmount
+
+        "total_stock_by_brand":"""
+        SELECT B.BrandName, SUM(L.Price * L.StockQuantity) AS TotalStockValue
+        FROM Laptops L
+        JOIN Brands B ON L.BrandID = B.BrandID
+        WHERE B.BrandName = ? -- Replace ? with the brand name (parameter)
+        GROUP BY B.BrandName;
+        """,
+
+        "average_price_by_category":"""
+        SELECT C.CategoryName, AVG(L.Price) AS AverageLaptopPrice
+        FROM Laptops L
+        JOIN Categories C ON L.CategoryID = C.CategoryID
+        WHERE C.CategoryName = ? -- Replace ? with the category name (parameter)
+        GROUP BY C.CategoryName;
+        """,
+
+        "popular_categories":"""
+        SELECT C.CategoryName, COUNT(L.LaptopID) AS LaptopCount
+        FROM Categories C
+        JOIN Laptops L ON C.CategoryID = L.CategoryID
+        GROUP BY C.CategoryName
+        HAVING COUNT(L.LaptopID) > ?;
+        """,
+
+
+        #Complex
+
+        "most_expensive_laptop_by_brand":"""
+        SELECT L.ModelName, L.Price
+        FROM Laptops L
+        WHERE L.Price = (
+            SELECT MAX(L2.Price)
+            FROM Laptops L2
+            JOIN Brands B ON L2.BrandID = B.BrandID
+            WHERE B.BrandName = ?
+        );
+        """,
+
+        "users_with_high_spending":"""
+        SELECT U.FirstName, U.LastName, SUM(O.TotalAmount) AS TotalSpent
+        FROM Users U
+        JOIN Orders O ON U.UserID = O.UserID
+        GROUP BY U.FirstName, U.LastName
+        HAVING SUM(O.TotalAmount) > (
+            SELECT AVG(TotalAmount) FROM Orders
+        );
+        """,
+
+        "laptops_not_in_cart":"""
+        SELECT L.ModelName
+        FROM Laptops L
+        WHERE L.Price > ?
+        AND L.LaptopID NOT IN (
+            SELECT DISTINCT CL.LaptopID FROM CartLaptops CL
+        );
+        """,
+
+        "categories_with_high_stock":"""
+        SELECT 
+        C.CategoryName,
+        COUNT(L.LaptopID) AS LaptopCount
+        FROM 
+            Categories C
+        JOIN 
+            Laptops L ON C.CategoryID = L.CategoryID
+        WHERE 
+            L.Price > ?
+            AND L.LaptopID NOT IN (
+                SELECT DISTINCT OL.LaptopID
+                FROM OrderLaptops OL
+            )
+        GROUP BY 
+            C.CategoryName
+        ORDER BY 
+        LaptopCount DESC;
+        """,
+
+        "no_payment_users":"""
+        SELECT 
+        U.FirstName, 
+        U.LastName, 
+        U.Email
+        FROM 
+            Users U
+        WHERE 
+        U.UserID NOT IN (
+            SELECT DISTINCT O.UserID
             FROM Orders O
-            JOIN Users U ON O.UserID = U.UserID
-            WHERE O.TotalAmount > (SELECT AVG(TotalAmount) FROM Orders);
+            JOIN Payments P ON O.OrderID = P.OrderID
+            WHERE YEAR(P.PaymentDate) >= ?
+        );
         """,
-        "unused_laptops": """
-            SELECT ModelName
-            FROM Laptops
-            WHERE LaptopID NOT IN (SELECT LaptopID FROM CartLaptops);
-        """,
-        "popular_categories": """
-            SELECT C.CategoryName, COUNT(L.LaptopID) AS LaptopCount
-            FROM Categories C
-            JOIN Laptops L ON C.CategoryID = L.CategoryID
-            GROUP BY C.CategoryName
-            HAVING COUNT(L.LaptopID) > 5;
-        """
+
     }
 
     query = queries.get(query_name)
@@ -164,7 +229,7 @@ def execute_query(query_name):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(query)
+        cursor.execute(query, (param,))
         rows = cursor.fetchall()
         columns = [column[0] for column in cursor.description]
 
@@ -175,3 +240,5 @@ def execute_query(query_name):
         return jsonify({"success": True, "results": results})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
+
+
