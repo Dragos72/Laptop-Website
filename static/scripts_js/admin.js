@@ -53,6 +53,34 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await response.json();
       alert(result.message);
     });
+
+    // Remove Category
+    document.getElementById("removeCategoryForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const categoryName = new FormData(event.target).get("categoryName");
+      const response = await fetch("/admin/remove_category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categoryName }),
+      });
+      const result = await response.json();
+      alert(result.message);
+    });
+
+    // Update Category
+    document.getElementById("updateCategoryForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+      const response = await fetch("/admin/update_category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      alert(result.message);
+    });
+
   
     // Add Laptop Form
     document.getElementById("addLaptopForm").addEventListener("submit", async (event) => {

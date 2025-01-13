@@ -117,38 +117,43 @@ def filter_laptops():
 @catalog_blueprint.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     """
-    This route adds a laptop to the cart by inserting a record into the CartLaptops table.
+    Add a laptop to the cart. If the laptop already exists in the cart, increment the quantity.
     """
     try:
-        data = request.json  # Get the JSON payload from the frontend
-        laptop_id = data.get('laptop_id')  # Extract the laptop ID from the request
+        data = request.json
+        laptop_id = data.get('laptop_id')
 
         # Ensure the user is logged in and has a CartID
         cart_id = session.get('CartID')
         if not cart_id:
             return jsonify({"success": False, "message": "No cart associated with the user."}), 403
 
-        # Default quantity
-        quantity = 1
-
         # Connect to the database
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Insert the new record into the CartLaptops table
-        query = """
-        INSERT INTO CartLaptops (CartID, LaptopID, Quantity)
-        VALUES (?, ?, ?);
-        """
-        cursor.execute(query, (cart_id, laptop_id, quantity))
-        conn.commit()  # Commit the transaction
+        # Check if the laptop is already in the cart
+        check_query = "SELECT Quantity FROM CartLaptops WHERE CartID = ? AND LaptopID = ?"
+        cursor.execute(check_query, (cart_id, laptop_id))
+        result = cursor.fetchone()
 
+        if result:
+            # If the laptop exists in the cart, increment the quantity
+            update_query = "UPDATE CartLaptops SET Quantity = Quantity + 1 WHERE CartID = ? AND LaptopID = ?"
+            cursor.execute(update_query, (cart_id, laptop_id))
+        else:
+            # If the laptop is not in the cart, insert a new record
+            insert_query = "INSERT INTO CartLaptops (CartID, LaptopID, Quantity) VALUES (?, ?, ?)"
+            cursor.execute(insert_query, (cart_id, laptop_id, 1))
+
+        conn.commit()
         cursor.close()
         conn.close()
 
         return jsonify({"success": True, "message": "Laptop added to cart successfully!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
     
 
 
@@ -393,48 +398,87 @@ def submit_payment():
         if not user_id:
             return jsonify({"success": False, "message": "User is not logged in"}), 403
 
-        # Get form data
-        total_amount = request.form.get('total_amount')
-        shipping_street = request.form.get('shipping_street')
-        billing_street = request.form.get('billing_street')
+        # Parse JSON data from the request
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "message": "Invalid or missing JSON payload"}), 400
+
+        total_amount = data.get('total_amount')
+        if total_amount is None or total_amount <= 0:
+            return jsonify({"success": False, "message": "Invalid total amount provided."}), 400
+
+        payment_amount = total_amount
+        payment_method = 'C'  # Default payment method
+
+        # Ensure the user has a cart associated
+        cart_id = session.get('CartID')
+        if not cart_id:
+            return jsonify({"success": False, "message": "No cart associated with the user."}), 403
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Fetch ShippingAddressID
-        query = "SELECT AddressID FROM Addresses WHERE Street = ? AND UserID = ?;"
-        cursor.execute(query, (shipping_street, user_id))
-        shipping_address_row = cursor.fetchone()
-
-        if not shipping_address_row:
-            return jsonify({"success": False, "message": "Shipping address not found"}), 400
-
-        shipping_address_id = shipping_address_row[0]
-
-        # Fetch BillingAddressID
-        query = "SELECT AddressID FROM Addresses WHERE Street = ? AND UserID = ?;"
-        cursor.execute(query, (billing_street, user_id))
-        billing_address_row = cursor.fetchone()
-
-        if not billing_address_row:
-            return jsonify({"success": False, "message": "Billing address not found"}), 400
-
-        billing_address_id = billing_address_row[0]
-
-        # Insert the order
+        # Insert the order into Orders table
         order_date = datetime.now().strftime('%Y-%m-%d')
         order_status = 'P'  # Pending
-        query = """
+        shipping_address_id = 1  # Example value, replace with actual shipping address
+        billing_address_id = 1  # Example value, replace with actual billing address
+        insert_order_query = """
         INSERT INTO Orders (UserID, OrderDate, TotalAmount, ShippingAddressID, BillingAddressID, OrderStatus)
         VALUES (?, ?, ?, ?, ?, ?);
         """
-        cursor.execute(query, (user_id, order_date, total_amount, shipping_address_id, billing_address_id, order_status))
+        cursor.execute(insert_order_query, (user_id, order_date, total_amount, shipping_address_id, billing_address_id, order_status))
+        conn.commit()
+
+        # Retrieve the OrderID of the newly inserted order
+        fetch_order_query = """
+        SELECT TOP 1 OrderID FROM Orders
+        WHERE UserID = ? AND TotalAmount = ? AND OrderStatus = ? AND OrderDate = ?
+        ORDER BY OrderID DESC;
+        """
+        cursor.execute(fetch_order_query, (user_id, total_amount, order_status, order_date))
+        order_row = cursor.fetchone()
+        if not order_row:
+            return jsonify({"success": False, "message": "Failed to fetch the OrderID."}), 500
+        order_id = order_row[0]
+
+        # Insert payment record into Payments table
+        payment_date = datetime.now().strftime('%Y-%m-%d')
+        insert_payment_query = """
+        INSERT INTO Payments (OrderID, PaymentDate, PaymentAmount, PaymentMethod)
+        VALUES (?, ?, ?, ?);
+        """
+        cursor.execute(insert_payment_query, (order_id, payment_date, payment_amount, payment_method))
+        conn.commit()
+
+        # Fetch cart items to insert into OrderLaptops
+        fetch_cart_items_query = """
+        SELECT CL.LaptopID, CL.Quantity, L.Price
+        FROM CartLaptops CL
+        JOIN Laptops L ON CL.LaptopID = L.LaptopID
+        WHERE CL.CartID = ?;
+        """
+        cursor.execute(fetch_cart_items_query, (cart_id,))
+        cart_items = cursor.fetchall()
+
+        # Insert each cart item into OrderLaptops
+        insert_order_laptops_query = """
+        INSERT INTO OrderLaptops (OrderID, LaptopID, Quantity, Price)
+        VALUES (?, ?, ?, ?);
+        """
+        for item in cart_items:
+            laptop_id, quantity, price = item
+            cursor.execute(insert_order_laptops_query, (order_id, laptop_id, quantity, price))
+        conn.commit()
+
+        # Clear the user's cart after the order is placed
+        clear_cart_query = "DELETE FROM CartLaptops WHERE CartID = ?;"
+        cursor.execute(clear_cart_query, (cart_id,))
         conn.commit()
 
         cursor.close()
         conn.close()
 
-        # Redirect to a success page or confirmation page
-        return redirect('/order_confirmation')
+        return jsonify({"success": True, "message": "Order submitted successfully!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

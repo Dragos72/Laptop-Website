@@ -78,6 +78,42 @@ def add_category():
         return jsonify({"success": True, "message": "Category added successfully"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
+    
+
+@adminRoutes_blueprint.route('/admin/remove_category', methods=['POST'])
+def remove_category():
+    data = request.json
+    try:
+        conn = get_db_connection()
+        query = "DELETE FROM Categories WHERE CategoryName = ?;"
+        cursor = conn.cursor()
+        cursor.execute(query, (data['categoryName'],))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"success": True, "message": "Category removed successfully"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+
+@adminRoutes_blueprint.route('/admin/update_category', methods=['POST'])
+def update_category():
+    data = request.json
+    try:
+        conn = get_db_connection()
+        query = """
+        UPDATE Categories
+        SET Description = ?
+        WHERE CategoryName = ?;
+        """
+        cursor = conn.cursor()
+        cursor.execute(query, (data['newDescription'], data['categoryName']))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"success": True, "message": "Category updated successfully"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 @adminRoutes_blueprint.route('/admin/add_laptop', methods=['POST'])
 def add_laptop():
