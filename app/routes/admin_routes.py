@@ -201,12 +201,13 @@ def execute_query(query_name):
         );
         """,
 
-        "users_with_high_spending":"""
+        "users_with_high_spending": """
         SELECT U.FirstName, U.LastName, SUM(O.TotalAmount) AS TotalSpent
         FROM Users U
         JOIN Orders O ON U.UserID = O.UserID
         GROUP BY U.FirstName, U.LastName
-        HAVING SUM(O.TotalAmount) >= (
+        HAVING SUM(O.TotalAmount) >= ?
+        AND SUM(O.TotalAmount) >= (
             SELECT AVG(TotalAmount) FROM Orders
         );
         """,

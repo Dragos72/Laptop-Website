@@ -421,8 +421,8 @@ def submit_payment():
         # Insert the order into Orders table
         order_date = datetime.now().strftime('%Y-%m-%d')
         order_status = 'P'  # Pending
-        shipping_address_id = 1  # Example value, replace with actual shipping address
-        billing_address_id = 1  # Example value, replace with actual billing address
+        shipping_address_id = 2  # Example value, replace with actual shipping address
+        billing_address_id = 2  # Example value, replace with actual billing address
         insert_order_query = """
         INSERT INTO Orders (UserID, OrderDate, TotalAmount, ShippingAddressID, BillingAddressID, OrderStatus)
         VALUES (?, ?, ?, ?, ?, ?);
