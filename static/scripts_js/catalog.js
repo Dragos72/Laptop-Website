@@ -83,10 +83,14 @@ function displayLaptops(laptops) {
     const laptopCard = document.createElement('div');
     laptopCard.classList.add('laptop-card');
 
-    // Set laptop image
+    // Generate the image URL based on LaptopID
     const img = document.createElement('img');
-    img.src = laptopImageUrl;; // Use a default image if no image is provided
+    const imagePath = `/static/assets/laptop_pictures/${laptop.LaptopID}.jpg`;
+    img.src = imagePath; // Set the dynamic image path
     img.alt = laptop.ModelName;
+    img.onerror = () => { // Fallback in case the image doesn't exist
+      img.src = '/static/assets/laptop_pictures/default.jpg'; // Use a default image
+    };
     laptopCard.appendChild(img);
 
     // Set model name
@@ -109,6 +113,7 @@ function displayLaptops(laptops) {
     row.appendChild(laptopCard);
   });
 }
+
 
 // Function to handle adding a laptop to the cart
 async function addToCart(laptopId) {
