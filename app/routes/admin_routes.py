@@ -148,19 +148,19 @@ def execute_query(query_name):
             JOIN Brands B ON L.BrandID = B.BrandID
             WHERE B.BrandName = ?;
         """,
-        "users_by_cart_count": """
-            SELECT U.FirstName, U.LastName, COUNT(SC.CartID) AS CartCount
-            FROM Users U
-            JOIN ShoppingCart SC ON U.UserID = SC.UserID
-            GROUP BY U.FirstName, U.LastName
-            HAVING COUNT(SC.CartID) > ?;
+        "popular_brands":"""
+        SELECT B.BrandName, COUNT(L.LaptopID) AS LaptopCount
+        FROM Brands B
+        JOIN Laptops L ON B.BrandID = L.CategoryID
+        GROUP BY B.BrandName
+        HAVING COUNT(L.LaptopID) >= ?;
         """,
         "total_orders_by_user":"""
         SELECT U.FirstName, U.LastName, COUNT(O.OrderID) AS OrderCount, SUM(O.TotalAmount) AS TotalAmount
         FROM Users U
         JOIN Orders O ON U.UserID = O.UserID
         GROUP BY U.FirstName, U.LastName
-        HAVING SUM(O.TotalAmount) > ?;
+        HAVING SUM(O.TotalAmount) >= ?;
         """,
 
         "total_stock_by_brand":"""
@@ -184,7 +184,7 @@ def execute_query(query_name):
         FROM Categories C
         JOIN Laptops L ON C.CategoryID = L.CategoryID
         GROUP BY C.CategoryName
-        HAVING COUNT(L.LaptopID) > ?;
+        HAVING COUNT(L.LaptopID) >= ?;
         """,
 
 
@@ -206,7 +206,7 @@ def execute_query(query_name):
         FROM Users U
         JOIN Orders O ON U.UserID = O.UserID
         GROUP BY U.FirstName, U.LastName
-        HAVING SUM(O.TotalAmount) > (
+        HAVING SUM(O.TotalAmount) >= (
             SELECT AVG(TotalAmount) FROM Orders
         );
         """,
@@ -229,7 +229,7 @@ def execute_query(query_name):
         JOIN 
             Laptops L ON C.CategoryID = L.CategoryID
         WHERE 
-            L.Price > ?
+            L.Price >= ?
             AND L.LaptopID NOT IN (
                 SELECT DISTINCT OL.LaptopID
                 FROM OrderLaptops OL

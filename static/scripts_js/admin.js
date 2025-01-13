@@ -180,7 +180,7 @@ async function executeQuery(queryName) {
   
     const queryLabels = {
       laptops_by_brand: "Enter Brand Name",
-      users_by_cart_count: "Enter Minimum Cart Count",
+      popular_brands: "Enter Minimum Laptops in Brand",
       total_orders_by_user: "Enter Minimum Order Amount",
       popular_categories: "Enter Minimum Laptops in Category",
       total_stock_by_brand: "Enter Brand Name",
