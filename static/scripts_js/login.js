@@ -6,7 +6,7 @@
 function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
-  
+
   fetch('/login', {
     method: 'POST',
     headers: {
@@ -17,14 +17,14 @@ function login() {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // Redirect to the main page if login is successful
-        window.location.href = "/catalog";
+        window.location.href = data.redirect; // Redirect based on response
       } else {
         alert("Login failed: " + data.message);
       }
     })
     .catch(error => console.error('Error:', error));
 }
+
 
 function route_createAccount() {
   window.location.href = "/create_account";

@@ -17,9 +17,9 @@ def login():
     try:
         conn = get_db_connection()
 
-        # Query to check user credentials
+        # Query to check user credentials and retrieve UserType
         query_user = """
-        SELECT UserID, FirstName, LastName
+        SELECT UserID, FirstName, LastName, UserType
         FROM Users
         WHERE Email = ? AND Password = ?;
         """
@@ -30,6 +30,8 @@ def login():
         if user:
             # Retrieve or create CartID for the user
             user_id = user[0]
+            user_type = user[3]
+
             query_cart = """
             SELECT CartID
             FROM ShoppingCart
@@ -51,15 +53,19 @@ def login():
             else:
                 cart_id = cart[0]
 
-            # Store UserID and CartID in session
+            # Store UserID, CartID, and UserType in session
             session['UserID'] = user_id
             session['CartID'] = cart_id
+            session['UserType'] = user_type
 
             cursor.close()
             conn.close()
 
-            # Login successful, return success response
-            return jsonify({"success": True, "first_name": user[1], "last_name": user[2]})
+            # Redirect based on UserType
+            if user_type == "A":
+                return jsonify({"success": True, "redirect": "/admin"})
+            else:
+                return jsonify({"success": True, "redirect": "/catalog"})
         else:
             # Login failed, send a failure message
             cursor.close()

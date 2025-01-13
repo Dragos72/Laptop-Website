@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <script src="{{ url_for('static', filename='scripts_js/admin.js') }}"></script>
+</head>
+<body>
+  <h1>Admin Page</h1>
+  
+  <!-- Add User Section -->
+  <section>
+    <h2>Add User</h2>
+    <form id="addUserForm">
+      <input type="text" name="firstName" placeholder="First Name" required>
+      <input type="text" name="lastName" placeholder="Last Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <input type="text" name="phoneNumber" placeholder="Phone Number">
+      <select name="userType">
+        <option value="C">Customer</option>
+        <option value="A">Admin</option>
+      </select>
+      <button type="submit">Add User</button>
+    </form>
+  </section>
+
+  <!-- Remove User Section -->
+  <section>
+    <h2>Remove User</h2>
+    <form id="removeUserForm">
+      <input type="email" name="email" placeholder="Email" required>
+      <button type="submit">Remove User</button>
+    </form>
+  </section>
+
+  <!-- Modify User Section -->
+  <section>
+    <h2>Modify User</h2>
+    <form id="modifyUserForm">
+      <input type="email" name="email" placeholder="Email (to find user)" required>
+      <input type="text" name="firstName" placeholder="New First Name">
+      <input type="text" name="lastName" placeholder="New Last Name">
+      <input type="password" name="password" placeholder="New Password">
+      <input type="text" name="phoneNumber" placeholder="New Phone Number">
+      <select name="userType">
+        <option value="C">Customer</option>
+        <option value="A">Admin</option>
+      </select>
+      <button type="submit">Modify User</button>
+    </form>
+  </section>
+
+  <!-- Add Category Section -->
+  <section>
+    <h2>Add Category</h2>
+    <form id="addCategoryForm">
+      <input type="text" name="categoryName" placeholder="Category Name" required>
+      <textarea name="description" placeholder="Description"></textarea>
+      <button type="submit">Add Category</button>
+    </form>
+  </section>
+
+  <!-- Add Laptop Section -->
+  <section>
+    <h2>Add Laptop</h2>
+    <form id="addLaptopForm">
+      <input type="text" name="modelName" placeholder="Model Name" required>
+      <input type="number" name="price" placeholder="Price" required>
+      <input type="number" name="stockQuantity" placeholder="Stock Quantity" required>
+      <input type="text" name="processor" placeholder="Processor" required>
+      <input type="number" name="ram" placeholder="RAM (GB)" required>
+      <input type="number" name="storage" placeholder="Storage (GB)" required>
+      <input type="text" name="graphicsCard" placeholder="Graphics Card">
+      <input type="number" name="screenSize" placeholder="Screen Size (inches)">
+      <textarea name="description" placeholder="Description"></textarea>
+      <button type="submit">Add Laptop</button>
+    </form>
+  </section>
+
+
+  <h2>Admin Queries</h2>
+<div class="query-section">
+  <h3>Simple Queries</h3>
+  <button onclick="executeQuery('laptops_with_categories')">View Laptops with Categories</button>
+  <button onclick="executeQuery('users_with_cart')">View Users with Carts</button>
+  <button onclick="executeQuery('laptops_in_cart')">View Laptops in Carts</button>
+  <button onclick="executeQuery('orders_with_users')">View Orders with Users</button>
+  <button onclick="executeQuery('laptops_with_brands')">View Laptops with Brands</button>
+  <button onclick="executeQuery('user_addresses')">View User Addresses</button>
+</div>
+
+<div class="query-section">
+  <h3>Complex Queries</h3>
+  <button onclick="executeQuery('most_expensive_laptop')">Most Expensive Laptop</button>
+  <button onclick="executeQuery('top_customers')">Top Customers</button>
+  <button onclick="executeQuery('unused_laptops')">Laptops Not in Carts</button>
+  <button onclick="executeQuery('popular_categories')">Popular Categories</button>
+</div>
+
+<div id="query-results">
+  <h3>Query Results</h3>
+  <table id="results-table">
+    <!-- Results will be displayed here -->
+  </table>
+</div>
+
+
+</body>
+</html>
