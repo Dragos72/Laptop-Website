@@ -48,23 +48,30 @@ function loadCategories() {
 
 function loadCategories() {
   fetch('/get_categories', {
-      method: 'GET',
-      headers: {
-          'X-Requested-With': 'XMLHttpRequest' // Custom header
-      }
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest' // Custom header
+    }
   })
   .then(response => response.json())
   .then(categories => {
-      const dropdownContent = document.getElementById('categoryDropdown');
-      categories.forEach(category => {
-          const a = document.createElement('a');
-          a.innerText = category;
-          a.href = "#";
-          dropdownContent.appendChild(a);
+    const dropdownContent = document.getElementById('categoryDropdown');
+    dropdownContent.innerHTML = ''; // Clear any previous items
+
+    categories.forEach(category => {
+      const a = document.createElement('a');
+      a.innerText = category;
+      a.href = "#";
+      a.addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent default anchor behavior
+        filterLaptopsByCategory(category); // Call your function
       });
+      dropdownContent.appendChild(a);
+    });
   })
   .catch(error => console.error('Error:', error));
 }
+
 
 function displayLaptops(laptops) {
   const laptopList = document.getElementById('laptop-list');
@@ -190,4 +197,25 @@ window.onclick = function(event) {
       }
     }
   }
+}
+
+function filterLaptopsByCategory(categoryName) {
+  fetch('/filter_laptops', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ category_name: categoryName })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      displayLaptops(data.laptops);
+    } else {
+      alert("Failed to filter laptops: " + data.message);
+    }
+  })
+  .catch(error => {
+    console.error("Error filtering laptops:", error);
+  });
 }

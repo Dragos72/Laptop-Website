@@ -97,15 +97,16 @@ def filter_laptops():
 
         # Query to fetch laptops based on the category
         query = """
-        SELECT L.ModelName, L.Price 
+        SELECT L.LaptopID, L.ModelName, L.Price 
         FROM Laptops L
         JOIN Categories C ON L.CategoryID = C.CategoryID
         WHERE C.CategoryName = ?;
         """
+
         cursor.execute(query, [category_name])
 
         # Fetch and format results
-        laptops = [{"model_name": row[0], "price": row[1]} for row in cursor.fetchall()]
+        laptops = [{"LaptopID": row[0], "ModelName": row[1], "Price": row[2]} for row in cursor.fetchall()]
         cursor.close()
         conn.close()
 
@@ -265,11 +266,11 @@ def myaccount():
         if not user_id:
             return jsonify({"success": False, "message": "User is not logged in"}), 403
 
-        # Connect to the database
+        
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Fetch user details
+        
         query_user = """
         SELECT FirstName, LastName, Email
         FROM Users
@@ -278,7 +279,7 @@ def myaccount():
         cursor.execute(query_user, [user_id])
         user = cursor.fetchone()
 
-        # Fetch addresses for the user
+        
         query_addresses = """
         SELECT Street, Number, City, PostalCode, Country, AddressType
         FROM Addresses
@@ -300,7 +301,7 @@ def myaccount():
         cursor.close()
         conn.close()
 
-        # Render MyAccount page
+        
         return render_template(
             'myaccount.html',
             user={"FirstName": user[0], "LastName": user[1], "Email": user[2]},
@@ -324,12 +325,12 @@ def submit_address():
     Handles the submission of a new address and inserts it into the Addresses table.
     """
     try:
-        # Get UserID from the session
+        
         user_id = session.get('UserID')
         if not user_id:
             return jsonify({"success": False, "message": "User is not logged in"}), 403
 
-        # Get the form data
+        
         street = request.form.get('street')
         number = request.form.get('number')
         city = request.form.get('city')
@@ -337,11 +338,11 @@ def submit_address():
         country = request.form.get('country')
         address_type = request.form.get('type')
 
-        # Connect to the database
+        
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Insert the new address
+       
         query = """
         INSERT INTO Addresses (UserID, Street, Number, City, PostalCode, Country, AddressType)
         VALUES (?, ?, ?, ?, ?, ?, ?);
@@ -352,7 +353,7 @@ def submit_address():
         cursor.close()
         conn.close()
 
-        # Redirect back to the MyAccount page
+        
         return redirect('/myaccount')
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -363,11 +364,11 @@ def get_address_details_by_street(street):
     Fetch details for a specific address by Street name.
     """
     try:
-        # Connect to the database
+        
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Query to fetch address details
+        
         query = """
         SELECT Street, Number, City, PostalCode, Country
         FROM Addresses
@@ -393,12 +394,12 @@ def get_address_details_by_street(street):
 @catalog_blueprint.route('/submit_payment', methods=['POST'])
 def submit_payment():
     try:
-        # Get UserID from session
+        
         user_id = session.get('UserID')
         if not user_id:
             return jsonify({"success": False, "message": "User is not logged in"}), 403
 
-        # Parse JSON data from the request
+       
         data = request.get_json()
         if not data:
             return jsonify({"success": False, "message": "Invalid or missing JSON payload"}), 400
@@ -408,9 +409,9 @@ def submit_payment():
             return jsonify({"success": False, "message": "Invalid total amount provided."}), 400
 
         payment_amount = total_amount
-        payment_method = 'C'  # Default payment method
+        payment_method = 'C'  
 
-        # Ensure the user has a cart associated
+        
         cart_id = session.get('CartID')
         if not cart_id:
             return jsonify({"success": False, "message": "No cart associated with the user."}), 403
@@ -418,11 +419,11 @@ def submit_payment():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Insert the order into Orders table
+        
         order_date = datetime.now().strftime('%Y-%m-%d')
-        order_status = 'P'  # Pending
-        shipping_address_id = 2  # Example value, replace with actual shipping address
-        billing_address_id = 2  # Example value, replace with actual billing address
+        order_status = 'P' 
+        shipping_address_id = 2  
+        billing_address_id = 2  
         insert_order_query = """
         INSERT INTO Orders (UserID, OrderDate, TotalAmount, ShippingAddressID, BillingAddressID, OrderStatus)
         VALUES (?, ?, ?, ?, ?, ?);
@@ -430,7 +431,7 @@ def submit_payment():
         cursor.execute(insert_order_query, (user_id, order_date, total_amount, shipping_address_id, billing_address_id, order_status))
         conn.commit()
 
-        # Retrieve the OrderID of the newly inserted order
+        
         fetch_order_query = """
         SELECT TOP 1 OrderID FROM Orders
         WHERE UserID = ? AND TotalAmount = ? AND OrderStatus = ? AND OrderDate = ?
@@ -442,7 +443,7 @@ def submit_payment():
             return jsonify({"success": False, "message": "Failed to fetch the OrderID."}), 500
         order_id = order_row[0]
 
-        # Insert payment record into Payments table
+        
         payment_date = datetime.now().strftime('%Y-%m-%d')
         insert_payment_query = """
         INSERT INTO Payments (OrderID, PaymentDate, PaymentAmount, PaymentMethod)
@@ -451,7 +452,7 @@ def submit_payment():
         cursor.execute(insert_payment_query, (order_id, payment_date, payment_amount, payment_method))
         conn.commit()
 
-        # Fetch cart items to insert into OrderLaptops
+        
         fetch_cart_items_query = """
         SELECT CL.LaptopID, CL.Quantity, L.Price
         FROM CartLaptops CL
@@ -461,7 +462,7 @@ def submit_payment():
         cursor.execute(fetch_cart_items_query, (cart_id,))
         cart_items = cursor.fetchall()
 
-        # Insert each cart item into OrderLaptops
+        
         insert_order_laptops_query = """
         INSERT INTO OrderLaptops (OrderID, LaptopID, Quantity, Price)
         VALUES (?, ?, ?, ?);
@@ -471,7 +472,7 @@ def submit_payment():
             cursor.execute(insert_order_laptops_query, (order_id, laptop_id, quantity, price))
         conn.commit()
 
-        # Clear the user's cart after the order is placed
+        
         clear_cart_query = "DELETE FROM CartLaptops WHERE CartID = ?;"
         cursor.execute(clear_cart_query, (cart_id,))
         conn.commit()
@@ -482,3 +483,8 @@ def submit_payment():
         return jsonify({"success": True, "message": "Order submitted successfully!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
+@catalog_blueprint.route('/signout')
+def signout():
+    session.clear() 
+    return redirect('/')  
