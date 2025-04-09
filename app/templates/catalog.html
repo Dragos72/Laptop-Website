@@ -18,10 +18,13 @@
     </div>
 
     <!-- Search Bar -->
+    <!-- Search Bar -->
     <div class="search-bar">
-      <input type="text" id="search" placeholder="Search for a laptop...">
+      <input type="text" id="search" placeholder="Search for a laptop..." oninput="handleAutocomplete()" autocomplete="off">
+      <ul id="autocomplete-list" class="autocomplete-box"></ul>
       <button onclick="searchLaptops()">Search</button>
     </div>
+
 
     <!-- Navigation Links -->
     <div class="nav-links">

@@ -165,6 +165,43 @@ async function searchLaptops() {
   }
 }
 
+async function handleAutocomplete() {
+  const input = document.getElementById('search');
+  const list = document.getElementById('autocomplete-list');
+  const term = input.value.trim();
+
+  list.innerHTML = ''; // clear old results
+
+  if (term.length === 0) return;
+
+  try {
+    const res = await fetch(`/autocomplete_laptops?term=${encodeURIComponent(term)}`);
+    const suggestions = await res.json();
+
+    suggestions.forEach(name => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      li.onclick = () => {
+        input.value = name;
+        list.innerHTML = '';
+        searchLaptops(); // trigger full search
+      };
+      list.appendChild(li);
+    });
+  } catch (error) {
+    console.error('Autocomplete error:', error);
+  }
+}
+
+// Optional: Close suggestion box on outside click
+document.addEventListener('click', function(e) {
+  if (!document.querySelector('.search-bar').contains(e.target)) {
+    document.getElementById('autocomplete-list').innerHTML = '';
+  }
+});
+
+
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const response = await fetch('/get_laptops');

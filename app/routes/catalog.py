@@ -489,3 +489,27 @@ def submit_payment():
 def signout():
     session.clear() 
     return redirect('/')  
+
+
+@catalog_blueprint.route('/autocomplete_laptops', methods=['GET'])
+def autocomplete_laptops():
+    try:
+        term = request.args.get('term', '').strip()
+        if not term:
+            return jsonify([])
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT TOP 3 ModelName 
+            FROM Laptops 
+            WHERE ModelName LIKE ?
+        """, [f"{term}%"])
+
+        results = [row[0] for row in cursor.fetchall()]
+        cursor.close()
+        conn.close()
+
+        return jsonify(results)
+    except Exception as e:
+        return jsonify([]), 500
