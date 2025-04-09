@@ -161,41 +161,60 @@ def add_to_cart():
 
 @catalog_blueprint.route('/get_cart_items', methods=['GET'])
 def get_cart_items():
-    """
-    Fetch all items in the user's cart and return their details.
-    """
     try:
-        # Ensure the user is logged in and has a CartID
+        # Verifică dacă utilizatorul are un coș salvat în sesiune
         cart_id = session.get('CartID')
         if not cart_id:
-            return jsonify({"success": False, "message": "No cart associated with the user."}), 403
+            return jsonify({
+                "success": False,
+                "message": "No cart associated with the user."
+            }), 403
 
-        # Connect to the database
+        # Conectare la baza de date
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Query to get cart items
+        # Interogare pentru a obține laptopurile din coș
         query = """
-        SELECT L.LaptopID, L.ModelName, L.Price, CL.Quantity
-        FROM CartLaptops CL
-        JOIN Laptops L ON CL.LaptopID = L.LaptopID
-        WHERE CL.CartID = ?;
+            SELECT 
+                L.LaptopID,
+                L.ModelName,
+                L.Price,
+                CL.Quantity,
+                L.StockQuantity
+            FROM CartLaptops CL
+            JOIN Laptops L ON CL.LaptopID = L.LaptopID
+            WHERE CL.CartID = ?;
         """
         cursor.execute(query, [cart_id])
 
-        # Fetch and format the results
+        # Formatare rezultate într-o listă de dicționare
         cart_items = [
-            {"laptop_id": row[0], "model_name": row[1], "price": row[2], "quantity": row[3]}
+            {
+                "laptop_id": row[0],
+                "model_name": row[1],
+                "price": row[2],
+                "quantity": row[3],
+                "stock_quantity": row[4]
+            }
             for row in cursor.fetchall()
         ]
 
+        # Închide cursorul și conexiunea
         cursor.close()
         conn.close()
 
-        # Return the cart items as JSON
-        return jsonify({"success": True, "items": cart_items})
+        return jsonify({
+            "success": True,
+            "items": cart_items
+        })
+
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+        # Returnează o eroare dacă apare vreo excepție
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
 
 
 

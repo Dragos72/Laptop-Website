@@ -16,7 +16,6 @@ async function loadCartItems() {
         const cartItem = document.createElement('div');
         cartItem.classList.add('cart-item');
 
-        // Image
         const img = document.createElement('img');
         img.src = `/static/assets/laptop_pictures/${item.laptop_id}.jpg`;
         img.alt = item.model_name;
@@ -25,35 +24,31 @@ async function loadCartItems() {
         };
         img.classList.add('cart-img');
 
-        // Item Info
         const info = document.createElement('div');
         info.classList.add('cart-info');
         info.innerHTML = `
           <h4>${item.model_name}</h4>
           <p>Price: ${item.price} Lei</p>
+          <p><small>In stock: ${item.stock_quantity}</small></p>
         `;
 
-        // Quantity input
         const quantityInput = document.createElement('input');
         quantityInput.type = 'number';
         quantityInput.value = item.quantity;
         quantityInput.min = 0;
+        quantityInput.max = item.stock_quantity;
         quantityInput.classList.add('qty-input');
 
         quantityInput.addEventListener('input', () => {
-          const qty = Math.max(0, parseInt(quantityInput.value) || 0);
+          let qty = parseInt(quantityInput.value) || 0;
+          if (qty > item.stock_quantity) {
+            qty = item.stock_quantity;
+            quantityInput.value = qty;
+          }
           item.quantity = qty;
           updateTotal(cartItems);
         });
 
-        cartItem.appendChild(img);
-        cartItem.appendChild(info);
-        cartItem.appendChild(quantityInput);
-        cartContainer.appendChild(cartItem);
-
-        totalPrice += item.price * item.quantity;
-
-        //Remove button
         const removeBtn = document.createElement('button');
         removeBtn.innerText = 'Remove';
         removeBtn.classList.add('remove-btn');
@@ -68,6 +63,9 @@ async function loadCartItems() {
         cartItem.appendChild(info);
         cartItem.appendChild(rightControls);
 
+        cartContainer.appendChild(cartItem);
+
+        totalPrice += item.price * item.quantity;
       });
 
       updateTotal(cartItems);
@@ -79,6 +77,8 @@ async function loadCartItems() {
     alert('An unexpected error occurred.');
   }
 }
+
+
 
 function updateTotal(cartItems) {
   let total = 0;
