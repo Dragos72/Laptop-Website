@@ -16,6 +16,16 @@ body {
   color: white;
 }
 
+.top-menu .menu-item {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  font-size: 16px;         /* ✅ Consistent font size */
+  font-weight: 500;        /* Optional: make weight consistent */
+  font-family: Arial, sans-serif;  /* Reinforce uniform font */
+}
+
+
 .top-menu .menu-item.active {
   background-color: #4CAF50;
   border-radius: 4px;

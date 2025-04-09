@@ -1,3 +1,10 @@
+/* Reset default margin/padding */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+
 .top-menu {
     display: flex;
     justify-content: flex-end; /* Align to the right */
@@ -9,7 +16,11 @@
     color: white;
     text-decoration: none;
     padding: 10px 15px;
+    font-size: 16px;         /* ✅ Consistent font size */
+    font-weight: 500;        /* Optional: make weight consistent */
+    font-family: Arial, sans-serif;  /* Reinforce uniform font */
   }
+  
   
   .top-menu .menu-item.active {
     background-color: #4CAF50;
