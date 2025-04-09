@@ -44,11 +44,30 @@ html, body {
   
   .cart-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 20px;
     border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: white;
+  }
+
+  .cart-img {
+    width: 120px;
+    height: 90px;
+    object-fit: contain;
     border-radius: 5px;
-    padding: 10px;
+  }
+
+  .cart-info {
+    flex: 1;
+  }
+
+  .qty-input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
   }
   
   .cart-item h4 {
@@ -82,5 +101,26 @@ html, body {
   
   .total-container button:hover {
     background-color: #45a049; /* Slightly darker green on hover */
+  }
+  
+  .cart-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  
+  .remove-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  
+  .remove-btn:hover {
+    background-color: #c0392b;
   }
   

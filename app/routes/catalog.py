@@ -176,7 +176,7 @@ def get_cart_items():
 
         # Query to get cart items
         query = """
-        SELECT L.ModelName, L.Price, CL.Quantity
+        SELECT L.LaptopID, L.ModelName, L.Price, CL.Quantity
         FROM CartLaptops CL
         JOIN Laptops L ON CL.LaptopID = L.LaptopID
         WHERE CL.CartID = ?;
@@ -185,7 +185,7 @@ def get_cart_items():
 
         # Fetch and format the results
         cart_items = [
-            {"model_name": row[0], "price": row[1], "quantity": row[2]}
+            {"laptop_id": row[0], "model_name": row[1], "price": row[2], "quantity": row[3]}
             for row in cursor.fetchall()
         ]
 
@@ -492,7 +492,6 @@ def signout():
 
 
 @catalog_blueprint.route('/autocomplete_laptops', methods=['GET'])
-@catalog_blueprint.route('/autocomplete_laptops', methods=['GET'])
 def autocomplete_laptops():
     try:
         query_term = request.args.get('term', '').strip()
@@ -524,3 +523,26 @@ def autocomplete_laptops():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@catalog_blueprint.route('/remove_from_cart', methods=['POST'])
+def remove_from_cart():
+    try:
+        data = request.json
+        laptop_id = data.get('laptop_id')
+        cart_id = session.get('CartID')
+
+        if not cart_id:
+            return jsonify({"success": False, "message": "No cart session found."}), 403
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        delete_query = "DELETE FROM CartLaptops WHERE CartID = ? AND LaptopID = ?"
+        cursor.execute(delete_query, (cart_id, laptop_id))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500

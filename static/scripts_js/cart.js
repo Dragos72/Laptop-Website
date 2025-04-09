@@ -2,48 +2,92 @@
 // Function to load cart items from the backend
 async function loadCartItems() {
   try {
-    const response = await fetch('/get_cart_items'); // Fetch data from the backend
+    const response = await fetch('/get_cart_items');
     const data = await response.json();
 
     if (data.success) {
       const cartItems = data.items;
       const cartContainer = document.getElementById('cart-items');
-      cartContainer.innerHTML = ''; // Clear previous content
+      cartContainer.innerHTML = '';
 
       let totalPrice = 0;
 
       cartItems.forEach(item => {
-        // Create cart item element
         const cartItem = document.createElement('div');
         cartItem.classList.add('cart-item');
 
-        // Display laptop details
-        const itemDetails = document.createElement('div');
-        itemDetails.innerHTML = `
+        // Image
+        const img = document.createElement('img');
+        img.src = `/static/assets/laptop_pictures/${item.laptop_id}.jpg`;
+        img.alt = item.model_name;
+        img.onerror = () => {
+          img.src = '/static/assets/laptop_pictures/default.jpg';
+        };
+        img.classList.add('cart-img');
+
+        // Item Info
+        const info = document.createElement('div');
+        info.classList.add('cart-info');
+        info.innerHTML = `
           <h4>${item.model_name}</h4>
           <p>Price: ${item.price} Lei</p>
-          <p>Quantity: ${item.quantity}</p>
         `;
-        cartItem.appendChild(itemDetails);
 
-        // Add the total price calculation
+        // Quantity input
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'number';
+        quantityInput.value = item.quantity;
+        quantityInput.min = 0;
+        quantityInput.classList.add('qty-input');
+
+        quantityInput.addEventListener('input', () => {
+          const qty = Math.max(0, parseInt(quantityInput.value) || 0);
+          item.quantity = qty;
+          updateTotal(cartItems);
+        });
+
+        cartItem.appendChild(img);
+        cartItem.appendChild(info);
+        cartItem.appendChild(quantityInput);
+        cartContainer.appendChild(cartItem);
+
         totalPrice += item.price * item.quantity;
 
-        // Append to the cart container
-        cartContainer.appendChild(cartItem);
+        //Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.innerText = 'Remove';
+        removeBtn.classList.add('remove-btn');
+        removeBtn.onclick = () => removeFromCart(item.laptop_id);
+
+        const rightControls = document.createElement('div');
+        rightControls.classList.add('cart-controls');
+        rightControls.appendChild(quantityInput);
+        rightControls.appendChild(removeBtn);
+
+        cartItem.appendChild(img);
+        cartItem.appendChild(info);
+        cartItem.appendChild(rightControls);
+
       });
 
-      // Update total price
-      const totalPriceElement = document.getElementById('total-price');
-      totalPriceElement.innerText = `Total: ${totalPrice.toFixed(2)} Lei`;
+      updateTotal(cartItems);
     } else {
-      alert('Failed to load cart items: ' + data.message);
+      alert('Failed to load cart: ' + data.message);
     }
   } catch (error) {
-    console.error('Error loading cart items:', error);
-    alert('An unexpected error occurred while loading the cart.');
+    console.error('Error loading cart:', error);
+    alert('An unexpected error occurred.');
   }
 }
+
+function updateTotal(cartItems) {
+  let total = 0;
+  cartItems.forEach(item => {
+    total += item.price * item.quantity;
+  });
+  document.getElementById('total-price').innerText = `Total: ${total.toFixed(2)} Lei`;
+}
+
 
 // Function to add a laptop to the cart
 async function addToCart(laptopId) {
@@ -108,3 +152,25 @@ function submitOrder() {
   
   // Load cart items on page load
   document.addEventListener('DOMContentLoaded', loadCartItems);
+
+
+  async function removeFromCart(laptopId) {
+    try {
+      const response = await fetch('/remove_from_cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ laptop_id: laptopId })
+      });
+      const data = await response.json();
+  
+      if (data.success) {
+        loadCartItems();
+      } else {
+        alert('Failed to remove item: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error removing item:', error);
+      alert('An error occurred.');
+    }
+  }
+  
