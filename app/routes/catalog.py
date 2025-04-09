@@ -492,24 +492,35 @@ def signout():
 
 
 @catalog_blueprint.route('/autocomplete_laptops', methods=['GET'])
+@catalog_blueprint.route('/autocomplete_laptops', methods=['GET'])
 def autocomplete_laptops():
     try:
-        term = request.args.get('term', '').strip()
-        if not term:
+        query_term = request.args.get('term', '').strip()
+        if not query_term:
             return jsonify([])
 
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT TOP 3 ModelName 
-            FROM Laptops 
-            WHERE ModelName LIKE ?
-        """, [f"{term}%"])
 
-        results = [row[0] for row in cursor.fetchall()]
+        # Prioritize starts-with matches, then contains matches (excluding duplicates)
+        cursor.execute("""
+            SELECT TOP 3 ModelName
+            FROM Laptops
+            WHERE ModelName LIKE ? 
+               OR (ModelName LIKE ? AND ModelName NOT LIKE ?)
+            ORDER BY 
+                CASE 
+                    WHEN ModelName LIKE ? THEN 0 
+                    ELSE 1 
+                END,
+                ModelName
+        """, [f"{query_term}%", f"%{query_term}%", f"{query_term}%", f"{query_term}%"])
+
+        suggestions = [row[0] for row in cursor.fetchall()]
         cursor.close()
         conn.close()
 
-        return jsonify(results)
+        return jsonify(suggestions)
     except Exception as e:
-        return jsonify([]), 500
+        return jsonify({"error": str(e)}), 500
+
