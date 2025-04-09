@@ -16,6 +16,11 @@ body {
   color: white;
 }
 
+.top-menu .menu-item.active {
+  background-color: #4CAF50;
+  border-radius: 4px;
+}
+
 /* Dropdown Menu for Categories */
 .dropdown {
   position: relative;
@@ -110,21 +115,40 @@ body {
   gap: 20px;
 }
 
-.laptop-card {
-  flex: 1 1 calc(25% - 20px);
-  background-color: #fff;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  padding: 10px;
-  text-align: center;
-  max-width: calc(25% - 20px);
+#laptop-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
 }
+
+
+
+.laptop-card {
+  flex: 1 1 calc(28.333%); /* 3 cards per row with spacing */
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+
 
 .laptop-card img {
   width: 100%;
   height: auto;
+  max-height: 250px;  /* optional upper limit */
+  object-fit: contain;
   border-radius: 5px;
 }
+
 
 .laptop-card h4 {
   font-size: 1.1em;

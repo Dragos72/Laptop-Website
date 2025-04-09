@@ -75,17 +75,9 @@ function loadCategories() {
 
 function displayLaptops(laptops) {
   const laptopList = document.getElementById('laptop-list');
-  laptopList.innerHTML = ''; // Clear existing content
+  laptopList.innerHTML = ''; // Clear previous content
 
-  let row;
-  laptops.forEach((laptop, index) => {
-    // Create a new row every 3 laptops
-    if (index % 3 === 0) {
-      row = document.createElement('div');
-      row.classList.add('row');
-      laptopList.appendChild(row);
-    }
-
+  laptops.forEach(laptop => {
     // Create the laptop card
     const laptopCard = document.createElement('div');
     laptopCard.classList.add('laptop-card');
@@ -93,10 +85,10 @@ function displayLaptops(laptops) {
     // Generate the image URL based on LaptopID
     const img = document.createElement('img');
     const imagePath = `/static/assets/laptop_pictures/${laptop.LaptopID}.jpg`;
-    img.src = imagePath; // Set the dynamic image path
+    img.src = imagePath;
     img.alt = laptop.ModelName;
-    img.onerror = () => { // Fallback in case the image doesn't exist
-      img.src = '/static/assets/laptop_pictures/default.jpg'; // Use a default image
+    img.onerror = () => {
+      img.src = '/static/assets/laptop_pictures/default.jpg';
     };
     laptopCard.appendChild(img);
 
@@ -113,13 +105,14 @@ function displayLaptops(laptops) {
     // Add to cart button
     const button = document.createElement('button');
     button.innerText = 'Add to Cart';
-    button.onclick = () => addToCart(laptop.LaptopID); // Pass the correct LaptopID
+    button.onclick = () => addToCart(laptop.LaptopID);
     laptopCard.appendChild(button);
 
-    // Append the laptop card to the row
-    row.appendChild(laptopCard);
+    // Append directly to the container
+    laptopList.appendChild(laptopCard);
   });
 }
+
 
 
 // Function to handle adding a laptop to the cart

@@ -59,17 +59,18 @@ def search_laptops():
         # Query to fetch laptops based on the search term
         if search_term:
             query = """
-            SELECT ModelName, Price 
+            SELECT LaptopID, ModelName, Price 
             FROM Laptops
             WHERE ModelName LIKE ?;
             """
+
             cursor.execute(query, [f"%{search_term}%"])
         else:
             # Query to fetch all laptops if no search term is provided
             query = "SELECT ModelName, Price FROM Laptops;"
             cursor.execute(query)
 
-        laptops = [{"model_name": row[0], "price": row[1]} for row in cursor.fetchall()]
+        laptops = [{"LaptopID": row[0], "ModelName": row[1], "Price": row[2]} for row in cursor.fetchall()]
         cursor.close()
         conn.close()
 
