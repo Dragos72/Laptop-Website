@@ -19,18 +19,21 @@ body {
   color: white;
   text-decoration: none;
   padding: 10px 15px;
-  font-size: 16px;         /* ✅ Consistent font size */
-  font-weight: 500;        /* Optional: make weight consistent */
-  font-family: Arial, sans-serif;  /* Reinforce uniform font */
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Arial, sans-serif;
 }
-
 
 .top-menu .menu-item.active {
   background-color: #4CAF50;
   border-radius: 4px;
 }
 
-/* Dropdown Menu for Categories */
+.top-menu .menu-item:hover {
+  background-color: #555;
+}
+
+/* Dropdown Menu */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -64,20 +67,18 @@ body {
   background-color: #f1f1f1;
 }
 
-/* Show the dropdown on button click */
 .show {
   display: block;
 }
 
-/* Search Bar */
+/* Search Bar + Autocomplete */
 .search-bar {
   position: relative;
 }
 
-
 .autocomplete-box {
   position: absolute;
-  top: 38px; /* just below the input */
+  top: 38px;
   left: 0;
   right: 0;
   background-color: white;
@@ -121,18 +122,7 @@ body {
   background-color: #45a049;
 }
 
-/* Navigation Links */
-.nav-links .menu-item {
-  color: white;
-  padding: 10px;
-  text-decoration: none;
-}
-
-.nav-links .menu-item:hover {
-  background-color: #555;
-}
-
-
+/* Main Layout */
 .main-wrapper {
   display: flex;
   flex-direction: column;
@@ -153,7 +143,7 @@ body {
   width: 420px;
   border-radius: 8px;
   object-fit: cover;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .laptop-info {
@@ -185,6 +175,7 @@ body {
   background-color: #0056b3;
 }
 
+/* Specs */
 .specs {
   text-align: center;
   max-width: 800px;
@@ -206,11 +197,7 @@ body {
   margin-bottom: 8px;
 }
 
-.top-menu .menu-item:hover {
-  background-color: #555;
-}
-
-
+/* Suggestions */
 .suggestions {
   margin-top: 40px;
   text-align: center;
@@ -231,7 +218,7 @@ body {
   border-radius: 10px;
   text-align: center;
   background-color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
   cursor: pointer;
 }

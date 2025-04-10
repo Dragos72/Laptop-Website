@@ -1,130 +1,123 @@
-/* Reset default margin/padding */
 html, body {
   margin: 0;
   padding: 0;
 }
 
-
 .top-menu {
-    display: flex;
-    justify-content: flex-end; /* Align to the right */
-    background-color: #333;
-    padding: 10px 20px;
-  }
-  
-  .top-menu .menu-item {
-    color: white;
-    text-decoration: none;
-    padding: 10px 15px;
-    font-size: 16px;         /* ✅ Consistent font size */
-    font-weight: 500;        /* Optional: make weight consistent */
-    font-family: Arial, sans-serif;  /* Reinforce uniform font */
-  }
-  
-  
-  .top-menu .menu-item.active {
-    background-color: #4CAF50;
-    border-radius: 4px;
-  }
-  
-  .cart-container {
-    padding: 20px;
-  }
-  
-  .cart-container h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  #cart-items {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .cart-item {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    background-color: white;
-  }
+  display: flex;
+  justify-content: flex-end;
+  background-color: #333;
+  padding: 10px 20px;
+}
 
-  .cart-img {
-    width: 120px;
-    height: 90px;
-    object-fit: contain;
-    border-radius: 5px;
-  }
+.top-menu .menu-item {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Arial, sans-serif;
+}
 
-  .cart-info {
-    flex: 1;
-  }
+.top-menu .menu-item:hover {
+  background-color: #555;
+}
 
-  .qty-input {
-    width: 60px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .cart-item h4 {
-    margin: 0;
-  }
-  
-  .cart-item p {
-    margin: 0;
-  }
-  
-  .total-container {
-    text-align: right;
-    margin-top: 20px;
-  }
-  
-  .total-container h3 {
-    font-size: 1.5em;
-    margin: 0;
-  }
-  
-  .total-container button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #4CAF50; /* Green button */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-  }
-  
-  .total-container button:hover {
-    background-color: #45a049; /* Slightly darker green on hover */
-  }
-  
-  .cart-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-  }
-  
-  .remove-btn {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-  }
-  
-  .remove-btn:hover {
-    background-color: #c0392b;
-  }
+.top-menu .menu-item.active {
+  background-color: #4CAF50;
+  border-radius: 4px;
+}
 
-  .top-menu .menu-item:hover {
-    background-color: #555;
-  }
-  
+.cart-container {
+  padding: 20px;
+}
+
+.cart-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: white;
+}
+
+.cart-img {
+  width: 120px;
+  height: 90px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+
+.cart-info {
+  flex: 1;
+}
+
+.cart-item h4,
+.cart-item p {
+  margin: 0;
+}
+
+.qty-input {
+  width: 60px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.cart-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.remove-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.remove-btn:hover {
+  background-color: #c0392b;
+}
+
+.total-container {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.total-container h3 {
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.total-container button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.total-container button:hover {
+  background-color: #45a049;
+}

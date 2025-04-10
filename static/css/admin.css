@@ -1,21 +1,19 @@
-/* General Styling */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  background-color: #f8f9fa; /* Light background */
+  background-color: #f8f9fa;
 }
 
 h1 {
   text-align: center;
   margin: 20px 0;
-  color: #343a40; /* Dark gray for header */
+  color: #343a40;
   font-size: 2.5rem;
 }
 
-/* Container Layout */
 .container {
   display: flex;
   justify-content: space-between;
@@ -23,37 +21,37 @@ h1 {
   gap: 20px;
 }
 
-/* Left Section */
-.left-section {
-  width: 60%;
-  background-color: #ffffff; /* White background */
+.left-section,
+.right-section {
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
+}
+
+.left-section {
+  width: 60%;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Right Section */
 .right-section {
   width: 35%;
-  background-color: #ffffff; /* White background */
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
 }
 
-/* Section Headings */
+section {
+  margin-bottom: 20px;
+}
+
 section h2 {
   font-size: 1.5rem;
-  color: #495057; /* Darker gray for section headings */
+  color: #495057;
   margin-bottom: 15px;
-  border-bottom: 2px solid #e9ecef; /* Subtle underline */
+  border-bottom: 2px solid #e9ecef;
   padding-bottom: 5px;
 }
 
-/* Form Styling */
 form input,
 form select,
 form textarea,
@@ -65,7 +63,7 @@ form button {
   border-radius: 5px;
   font-size: 1rem;
   background-color: #f8f9fa;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: 0.3s;
 }
 
 form input:focus,
@@ -73,15 +71,15 @@ form select:focus,
 form textarea:focus {
   outline: none;
   border-color: #007bff;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 form button {
   background-color: #007bff;
-  color: white;
+  color: #fff;
+  font-weight: bold;
   border: none;
   cursor: pointer;
-  font-weight: bold;
   transition: background-color 0.3s;
 }
 
@@ -89,7 +87,6 @@ form button:hover {
   background-color: #0056b3;
 }
 
-/* Query Section Styling */
 .query-section label,
 .query-section select,
 .query-section input,
@@ -99,20 +96,13 @@ form button:hover {
 }
 
 .query-section button {
-  background-color: #28a745; /* Green button */
-  color: white;
-  border: none;
-  padding: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  background-color: #28a745;
 }
 
 .query-section button:hover {
   background-color: #218838;
 }
 
-/* Query Results Styling */
 #query-results {
   margin-top: 20px;
 }
@@ -121,7 +111,7 @@ form button:hover {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
-  animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 #results-table th,
@@ -134,7 +124,7 @@ form button:hover {
 
 #results-table th {
   background-color: #007bff;
-  color: white;
+  color: #fff;
   font-weight: bold;
 }
 
@@ -143,10 +133,9 @@ form button:hover {
 }
 
 #results-table tr:nth-child(even) td {
-  background-color: #e9ecef; /* Alternating row color */
+  background-color: #e9ecef;
 }
 
-/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -158,20 +147,9 @@ form button:hover {
   }
 }
 
-/* Section Styling */
-section {
-  margin-bottom: 20px;
-}
-
-h2 {
-  color: #495057; /* Darker gray for section headers */
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
-    gap: 20px;
   }
 
   .left-section,

@@ -25,28 +25,35 @@ body {
   border-radius: 4px;
 }
 
-.myaccount-container {
-  padding: 20px;
-  text-align: center; /* ✅ Center all child content */
+.top-menu .menu-item:hover {
+  background-color: #555;
 }
 
-.user-info, .address-section {
+.myaccount-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.user-info,
+.address-section {
   margin-bottom: 30px;
 }
 
-.user-info p, .address-section p {
-  text-align: center;  /* ✅ Center individual lines */
+.user-info p,
+.address-section p {
+  text-align: center;
 }
 
-h1, h2 {
+h1,
+h2 {
   text-align: center;
 }
 
 .address-list {
   list-style: none;
   padding: 0;
-  display: inline-block; /* ✅ Keep address cards centered as a block */
-  text-align: left; /* ✅ But text inside them stays left-aligned */
+  display: inline-block;
+  text-align: left;
 }
 
 .address-list li {
@@ -70,8 +77,4 @@ button {
 
 button:hover {
   background-color: #45a049;
-}
-
-.top-menu .menu-item:hover {
-  background-color: #555;
 }
