@@ -1,72 +1,77 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .top-menu {
-    display: flex;
-    justify-content: flex-end;
-    background-color: #333;
-    padding: 10px 20px;
-  }
-  
-  .top-menu .menu-item {
-    color: white;
-    text-decoration: none;
-    padding: 10px 15px;
-    font-size: 16px;         /* ✅ Consistent font size */
-    font-weight: 500;        /* Optional: make weight consistent */
-    font-family: Arial, sans-serif;  /* Reinforce uniform font */
-  }
-  
-  
-  .top-menu .menu-item.active {
-    background-color: #4CAF50;
-    border-radius: 4px;
-  }
-  
-  .myaccount-container {
-    padding: 20px;
-  }
-  
-  .user-info, .address-section {
-    margin-bottom: 30px;
-  }
-  
-  h1, h2 {
-    text-align: center;
-  }
-  
-  .address-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .address-list li {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  
-  button {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
-  .top-menu .menu-item:hover {
-    background-color: #555;
-  }
-  
+.top-menu {
+  display: flex;
+  justify-content: flex-end;
+  background-color: #333;
+  padding: 10px 20px;
+}
+
+.top-menu .menu-item {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Arial, sans-serif;
+}
+
+.top-menu .menu-item.active {
+  background-color: #4CAF50;
+  border-radius: 4px;
+}
+
+.myaccount-container {
+  padding: 20px;
+  text-align: center; /* ✅ Center all child content */
+}
+
+.user-info, .address-section {
+  margin-bottom: 30px;
+}
+
+.user-info p, .address-section p {
+  text-align: center;  /* ✅ Center individual lines */
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+.address-list {
+  list-style: none;
+  padding: 0;
+  display: inline-block; /* ✅ Keep address cards centered as a block */
+  text-align: left; /* ✅ But text inside them stays left-aligned */
+}
+
+.address-list li {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.top-menu .menu-item:hover {
+  background-color: #555;
+}

@@ -22,11 +22,20 @@ def create_app():
     from .routes.catalog import catalog_blueprint
     from .routes.create_user import create_user_blueprint
     from .routes.admin_routes import adminRoutes_blueprint
+    from .routes.cart import cart_blueprint
+    from .routes.payment import payment_blueprint
+    from .routes.my_account import my_account_blueprint
+    from .routes.order import order_blueprint
+
 
     app.register_blueprint(login_blueprint)
     app.register_blueprint(catalog_blueprint)
     app.register_blueprint(create_user_blueprint)
     app.register_blueprint(adminRoutes_blueprint)
+    app.register_blueprint(cart_blueprint)
+    app.register_blueprint(payment_blueprint)  
+    app.register_blueprint(my_account_blueprint)
+    app.register_blueprint(order_blueprint)
     #app.register_blueprint(catalog_blueprint)
 
     return app
