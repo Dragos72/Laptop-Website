@@ -15,6 +15,7 @@ async function loadCartItems() {
       cartItems.forEach(item => {
         const cartItem = document.createElement('div');
         cartItem.classList.add('cart-item');
+        cartItem.dataset.laptopId = item.laptop_id;
 
         const img = document.createElement('img');
         img.src = `/static/assets/laptop_pictures/${item.laptop_id}.jpg`;
@@ -115,9 +116,23 @@ async function addToCart(laptopId) {
 document.addEventListener('DOMContentLoaded', loadCartItems);
 
 // Redirect to payment page
-function submitOrder() {
-  window.location.href = "/payment";
+async function updateCartQuantities(cartItems) {
+  try {
+    const response = await fetch('/update_cart_quantities', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cartItems })
+    });
+    const data = await response.json();
+
+    if (!data.success) {
+      alert('Failed to update cart quantities: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Error updating quantities:', error);
+  }
 }
+
 
   
   // Call loadCartItems when the page loads
@@ -129,16 +144,25 @@ function submitOrder() {
       const totalPriceElement = document.getElementById('total-price');
       const totalAmount = parseFloat(totalPriceElement.innerText.replace('Total: ', '').replace(' Lei', ''));
   
-      const response = await fetch('/submit_payment', {
+      const cartItems = Array.from(document.querySelectorAll('.cart-item')).map(item => {
+        const laptopId = parseInt(item.dataset.laptopId);
+        const quantity = parseInt(item.querySelector('.qty-input').value);
+        return { laptop_id: laptopId, quantity };
+      });
+      
+  
+      await updateCartQuantities(cartItems);
+  
+      const response = await fetch('/submit_order', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // Ensure Content-Type is JSON
-        body: JSON.stringify({ total_amount: totalAmount }) // Send total_amount as JSON
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total_amount: totalAmount })
       });
   
       const data = await response.json();
       if (data.success) {
         alert('Order submitted successfully!');
-        window.location.href = '/catalog'; // Redirect to catalog
+        window.location.href = '/catalog';
       } else {
         alert('Failed to submit order: ' + data.message);
       }
@@ -147,6 +171,8 @@ function submitOrder() {
       alert('An unexpected error occurred while submitting the order.');
     }
   }
+  
+  
   
   
   
@@ -174,3 +200,7 @@ function submitOrder() {
     }
   }
   
+
+
+
+

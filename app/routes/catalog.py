@@ -36,7 +36,7 @@ def get_categories():
 def get_laptops():
     try:
         conn = get_db_connection()
-        query = "SELECT LaptopID, ModelName, Price FROM Laptops;"
+        query = "SELECT LaptopID, ModelName, Price FROM Laptops WHERE StockQuantity > 0;"
         cursor = conn.cursor()
         cursor.execute(query)
         laptops = [{"LaptopID": row[0], "ModelName": row[1], "Price": row[2]} for row in cursor.fetchall()]
@@ -411,98 +411,93 @@ def get_address_details_by_street(street):
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-@catalog_blueprint.route('/submit_payment', methods=['POST'])
-def submit_payment():
+@catalog_blueprint.route('/submit_order', methods=['POST'])
+def submit_order():
     try:
-        
         user_id = session.get('UserID')
-        if not user_id:
-            return jsonify({"success": False, "message": "User is not logged in"}), 403
+        cart_id = session.get('CartID')
 
-       
+        if not user_id or not cart_id:
+            return jsonify({"success": False, "message": "User not logged in or no cart found"}), 403
+
+        # We'll use a dummy total from JS (you still send it)
         data = request.get_json()
-        if not data:
-            return jsonify({"success": False, "message": "Invalid or missing JSON payload"}), 400
-
         total_amount = data.get('total_amount')
         if total_amount is None or total_amount <= 0:
-            return jsonify({"success": False, "message": "Invalid total amount provided."}), 400
-
-        payment_amount = total_amount
-        payment_method = 'C'  
-
-        
-        cart_id = session.get('CartID')
-        if not cart_id:
-            return jsonify({"success": False, "message": "No cart associated with the user."}), 403
+            return jsonify({"success": False, "message": "Invalid total amount"}), 400
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        
-        order_date = datetime.now().strftime('%Y-%m-%d')
-        order_status = 'P' 
-        shipping_address_id = 2  
-        billing_address_id = 2  
-        insert_order_query = """
-        INSERT INTO Orders (UserID, OrderDate, TotalAmount, ShippingAddressID, BillingAddressID, OrderStatus)
-        VALUES (?, ?, ?, ?, ?, ?);
-        """
-        cursor.execute(insert_order_query, (user_id, order_date, total_amount, shipping_address_id, billing_address_id, order_status))
-        conn.commit()
-
-        
-        fetch_order_query = """
-        SELECT TOP 1 OrderID FROM Orders
-        WHERE UserID = ? AND TotalAmount = ? AND OrderStatus = ? AND OrderDate = ?
-        ORDER BY OrderID DESC;
-        """
-        cursor.execute(fetch_order_query, (user_id, total_amount, order_status, order_date))
-        order_row = cursor.fetchone()
-        if not order_row:
-            return jsonify({"success": False, "message": "Failed to fetch the OrderID."}), 500
-        order_id = order_row[0]
-
-        
-        payment_date = datetime.now().strftime('%Y-%m-%d')
-        insert_payment_query = """
-        INSERT INTO Payments (OrderID, PaymentDate, PaymentAmount, PaymentMethod)
-        VALUES (?, ?, ?, ?);
-        """
-        cursor.execute(insert_payment_query, (order_id, payment_date, payment_amount, payment_method))
-        conn.commit()
-
-        
-        fetch_cart_items_query = """
-        SELECT CL.LaptopID, CL.Quantity, L.Price
-        FROM CartLaptops CL
-        JOIN Laptops L ON CL.LaptopID = L.LaptopID
-        WHERE CL.CartID = ?;
-        """
-        cursor.execute(fetch_cart_items_query, (cart_id,))
+        # Fetch cart items and their quantities
+        cursor.execute("""
+            SELECT CL.LaptopID, CL.Quantity, L.Price, L.StockQuantity
+            FROM CartLaptops CL
+            JOIN Laptops L ON CL.LaptopID = L.LaptopID
+            WHERE CL.CartID = ?;
+        """, (cart_id,))
         cart_items = cursor.fetchall()
 
-        
-        insert_order_laptops_query = """
-        INSERT INTO OrderLaptops (OrderID, LaptopID, Quantity, Price)
-        VALUES (?, ?, ?, ?);
-        """
-        for item in cart_items:
-            laptop_id, quantity, price = item
-            cursor.execute(insert_order_laptops_query, (order_id, laptop_id, quantity, price))
+        if not cart_items:
+            return jsonify({"success": False, "message": "Cart is empty"}), 400
+
+        # Check stock
+        for laptop_id, quantity, price, stock_quantity in cart_items:
+            if quantity > stock_quantity:
+                return jsonify({"success": False, "message": f"Not enough stock for laptop ID {laptop_id}."}), 400
+
+        # Insert order
+        order_date = datetime.now().strftime('%Y-%m-%d')
+        order_status = 'P'
+        shipping_address_id = 2  # default
+        billing_address_id = 2   # default
+        cursor.execute("""
+            INSERT INTO Orders (UserID, OrderDate, TotalAmount, ShippingAddressID, BillingAddressID, OrderStatus)
+            VALUES (?, ?, ?, ?, ?, ?);
+        """, (user_id, order_date, total_amount, shipping_address_id, billing_address_id, order_status))
         conn.commit()
 
-        
-        clear_cart_query = "DELETE FROM CartLaptops WHERE CartID = ?;"
-        cursor.execute(clear_cart_query, (cart_id,))
+        # Fetch new OrderID
+        cursor.execute("""
+            SELECT TOP 1 OrderID FROM Orders
+            WHERE UserID = ? AND TotalAmount = ? AND OrderDate = ?
+            ORDER BY OrderID DESC;
+        """, (user_id, total_amount, order_date))
+        order_id = cursor.fetchone()[0]
+
+        # Insert into OrderLaptops + Subtract from stock
+        for laptop_id, quantity, price, stock_quantity in cart_items:
+            cursor.execute("""
+                INSERT INTO OrderLaptops (OrderID, LaptopID, Quantity, Price)
+                VALUES (?, ?, ?, ?);
+            """, (order_id, laptop_id, quantity, price))
+
+            cursor.execute("""
+                UPDATE Laptops
+                SET StockQuantity = StockQuantity - ?
+                WHERE LaptopID = ?;
+            """, (quantity, laptop_id))
+
+        # Insert dummy payment
+        payment_date = datetime.now().strftime('%Y-%m-%d')
+        payment_amount = total_amount
+        payment_method = 'C'  # e.g., Card
+        cursor.execute("""
+            INSERT INTO Payments (OrderID, PaymentDate, PaymentAmount, PaymentMethod)
+            VALUES (?, ?, ?, ?);
+        """, (order_id, payment_date, payment_amount, payment_method))
+
+        # Clear cart
+        cursor.execute("DELETE FROM CartLaptops WHERE CartID = ?;", (cart_id,))
         conn.commit()
 
         cursor.close()
         conn.close()
 
-        return jsonify({"success": True, "message": "Order submitted successfully!"})
+        return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
 
 @catalog_blueprint.route('/signout')
 def signout():
@@ -559,6 +554,40 @@ def remove_from_cart():
         cursor.execute(delete_query, (cart_id, laptop_id))
         conn.commit()
 
+        cursor.close()
+        conn.close()
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+
+@catalog_blueprint.route('/update_cart_quantities', methods=['POST'])
+def update_cart_quantities():
+    try:
+        cart_id = session.get('CartID')
+        if not cart_id:
+            return jsonify({"success": False, "message": "No cart session found."}), 403
+
+        data = request.get_json()
+        items = data.get('items', [])
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        for item in items:
+            laptop_id = item.get('laptop_id')
+            quantity = item.get('quantity', 1)
+
+            update_query = """
+            UPDATE CartLaptops 
+            SET Quantity = ? 
+            WHERE CartID = ? AND LaptopID = ?
+            """
+            cursor.execute(update_query, (quantity, cart_id, laptop_id))
+
+        conn.commit()
         cursor.close()
         conn.close()
 
