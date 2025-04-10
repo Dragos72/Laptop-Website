@@ -1,29 +1,248 @@
-.laptop-details-container {
-    display: flex;
-    padding: 30px;
-    gap: 40px;
-  }
-  
-  .laptop-image img {
-    width: 400px;
-    border-radius: 8px;
-    object-fit: cover;
-  }
-  
-  .laptop-info {
-    flex: 1;
-  }
-  
-  .laptop-info h1 {
-    margin-bottom: 10px;
-  }
-  
-  .specs ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .specs ul li {
-    margin-bottom: 6px;
-  }
-  
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+/* Top Navigation Menu */
+.top-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px;
+  color: white;
+}
+
+.top-menu .menu-item {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  font-size: 16px;         /* ✅ Consistent font size */
+  font-weight: 500;        /* Optional: make weight consistent */
+  font-family: Arial, sans-serif;  /* Reinforce uniform font */
+}
+
+
+.top-menu .menu-item.active {
+  background-color: #4CAF50;
+  border-radius: 4px;
+}
+
+/* Dropdown Menu for Categories */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Show the dropdown on button click */
+.show {
+  display: block;
+}
+
+/* Search Bar */
+.search-bar {
+  position: relative;
+}
+
+
+.autocomplete-box {
+  position: absolute;
+  top: 38px; /* just below the input */
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  z-index: 999;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.autocomplete-box li {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: black;
+}
+
+.autocomplete-box li:hover {
+  background-color: #f1f1f1;
+}
+
+.search-bar input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-bar button {
+  padding: 8px 12px;
+  margin-left: 8px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #45a049;
+}
+
+/* Navigation Links */
+.nav-links .menu-item {
+  color: white;
+  padding: 10px;
+  text-decoration: none;
+}
+
+.nav-links .menu-item:hover {
+  background-color: #555;
+}
+
+
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+.top-section {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  align-items: center;
+  max-width: 1000px;
+  margin-bottom: 40px;
+}
+
+.laptop-image img {
+  width: 420px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.laptop-info {
+  max-width: 500px;
+}
+
+.laptop-info h1 {
+  margin-bottom: 15px;
+  font-size: 28px;
+}
+
+.laptop-info .description {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #444;
+}
+
+.laptop-info button {
+  padding: 10px 20px;
+  font-size: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.laptop-info button:hover {
+  background-color: #0056b3;
+}
+
+.specs {
+  text-align: center;
+  max-width: 800px;
+}
+
+.specs h3 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+.specs ul {
+  list-style-type: none;
+  padding: 0;
+  font-size: 16px;
+  text-align: left;
+}
+
+.specs ul li {
+  margin-bottom: 8px;
+}
+
+.top-menu .menu-item:hover {
+  background-color: #555;
+}
+
+
+.suggestions {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.suggestion-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.laptop-card {
+  width: 200px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  text-align: center;
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.laptop-card:hover {
+  transform: scale(1.05);
+}
+
+.laptop-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+}

@@ -123,4 +123,8 @@ html, body {
   .remove-btn:hover {
     background-color: #c0392b;
   }
+
+  .top-menu .menu-item:hover {
+    background-color: #555;
+  }
   

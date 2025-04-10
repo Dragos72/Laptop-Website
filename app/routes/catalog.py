@@ -9,8 +9,45 @@ catalog_blueprint = Blueprint('catalog', __name__)
 
 @catalog_blueprint.route('/catalog')
 def catalog():
-    # You may fetch categories and laptop data from your database here
-    return render_template('catalog.html')
+    search_term = request.args.get('search', '').strip()
+    category = request.args.get('category', '').strip()
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        if search_term:
+            query = """
+            SELECT LaptopID, ModelName, Price 
+            FROM Laptops 
+            WHERE ModelName LIKE ? AND StockQuantity > 0
+            """
+            cursor.execute(query, [f"%{search_term}%"])
+        elif category:
+            query = """
+            SELECT L.LaptopID, L.ModelName, L.Price
+            FROM Laptops L
+            JOIN Categories C ON L.CategoryID = C.CategoryID
+            WHERE C.CategoryName = ? AND L.StockQuantity > 0
+            """
+            cursor.execute(query, [category])
+        else:
+            query = "SELECT LaptopID, ModelName, Price FROM Laptops WHERE StockQuantity > 0"
+            cursor.execute(query)
+
+        laptops = [
+            {"LaptopID": row[0], "ModelName": row[1], "Price": row[2]}
+            for row in cursor.fetchall()
+        ]
+
+        return render_template('catalog.html', laptops=laptops)
+
+    except Exception as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 @catalog_blueprint.route('/get_categories', methods=['GET'])
 def get_categories():
@@ -616,12 +653,6 @@ def laptop_details(laptop_id):
         cursor.execute(query, (laptop_id,))
         row = cursor.fetchone()
 
-        cursor.close()
-        conn.close()
-
-        if not row:
-            return render_template('404.html'), 404
-
         laptop = {
             "LaptopID": row[0],
             "ModelName": row[1],
@@ -637,7 +668,42 @@ def laptop_details(laptop_id):
             "CategoryName": row[11]
         }
 
-        return render_template("laptop_details.html", laptop=laptop)
+        # After fetching main laptop data
+        first_letter = laptop["ModelName"][0].upper()
+
+        cursor.execute("""
+            SELECT TOP 4 LaptopID, ModelName, Price
+            FROM Laptops
+            WHERE (
+                UPPER(ModelName) LIKE ? 
+                OR UPPER(ModelName) LIKE ?
+            ) AND LaptopID != ? AND StockQuantity > 0
+            ORDER BY 
+                CASE 
+                    WHEN UPPER(ModelName) LIKE ? THEN 0
+                    ELSE 1
+                END,
+                ModelName
+        """, [f"{first_letter}%", f"%{first_letter}%", laptop_id, f"{first_letter}%"])
+
+
+        suggestions = [
+            {"LaptopID": row[0], "ModelName": row[1], "Price": row[2]}
+            for row in cursor.fetchall()
+        ]
+
+        cursor.close()
+        conn.close()
+
+        if not row:
+            return render_template('404.html'), 404
+
+        
+
+        
+
+        return render_template("laptop_details.html", laptop=laptop, suggestions=suggestions)
+
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -40,8 +40,16 @@
   <section class="catalog">
     <div class="catalog-container">
       <div id="laptop-list">
-        <!-- Laptop items will be populated here -->
+        {% for laptop in laptops %}
+          <div class="laptop-card" onclick="window.location.href='/laptop/{{ laptop.LaptopID }}'">
+            <img src="/static/assets/laptop_pictures/{{ laptop.LaptopID }}.jpg" onerror="this.src='/static/assets/laptop_pictures/default.jpg'" alt="{{ laptop.ModelName }}">
+            <h4>{{ laptop.ModelName }}</h4>
+            <p>Price: {{ laptop.Price }} Lei</p>
+            <button onclick="event.stopPropagation(); addToCart('{{ laptop.LaptopID }}')">Add to Cart</button>
+          </div>
+        {% endfor %}
       </div>
+      
     </div>
   </section>
 </div>

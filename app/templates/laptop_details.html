@@ -7,51 +7,80 @@
 </head>
 <body>
 
-  <div class="laptop-details-container">
-    <div class="laptop-image">
-      <img src="/static/assets/laptop_pictures/{{ laptop.LaptopID }}.jpg" alt="{{ laptop.ModelName }}">
+  <nav class="top-menu">
+    <div class="dropdown">
+      <button class="dropbtn" onclick="toggleDropdown()">Categories</button>
+      <div id="categoryDropdown" class="dropdown-content">
+        <!-- Category items will be populated here -->
+      </div>
     </div>
 
-    <div class="laptop-info">
-      <h1>{{ laptop.ModelName }}</h1>
-      <p>{{ laptop.Description }}</p>
-      <button onclick="addToCart('{{ laptop.LaptopID }}')">Add to Cart</button>
+    <!-- Search Bar -->
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search for a laptop..." oninput="handleAutocomplete()" autocomplete="off">
+      <ul id="autocomplete-list" class="autocomplete-box"></ul>
+      <button onclick="searchLaptops()">Search</button>
+    </div>
 
-      <div class="specs">
-        <h3>Specs</h3>
-        <ul>
-          <li><strong>Brand:</strong> {{ laptop.BrandName }}</li>
-          <li><strong>Category:</strong> {{ laptop.CategoryName }}</li>
-          <li><strong>Processor:</strong> {{ laptop.Processor }}</li>
-          <li><strong>RAM:</strong> {{ laptop.RAM }} GB</li>
-          <li><strong>Storage:</strong> {{ laptop.Storage }} GB</li>
-          <li><strong>Graphics Card:</strong> {{ laptop.GraphicsCard }}</li>
-          <li><strong>Screen Size:</strong> {{ laptop.ScreenSize }} inches</li>
-        </ul>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a href="/catalog" class="menu-item">Catalog</a>
+      <a href="/cart" class="menu-item">Cart</a>
+      <a href="/myaccount" class="menu-item">My Account</a>
+      <a href="/signout" class="menu-item">Sign out</a>
+    </div>
+  </nav>
+
+
+  <div class="main-wrapper">
+    <div class="top-section">
+      <div class="laptop-image">
+        <img src="/static/assets/laptop_pictures/{{ laptop.LaptopID }}.jpg" alt="{{ laptop.ModelName }}">
       </div>
+
+      <div class="laptop-info">
+        <h1>{{ laptop.ModelName }}</h1>
+        <p class="description">{{ laptop.Description }}</p>
+        <button onclick="addToCart('{{ laptop.LaptopID }}')">Add to Cart</button>
+      </div>
+    </div>
+
+    <div class="specs">
+      <h3>Specs</h3>
+      <ul>
+        <li><strong>Brand:</strong> {{ laptop.BrandName }}</li>
+        <li><strong>Category:</strong> {{ laptop.CategoryName }}</li>
+        <li><strong>Processor:</strong> {{ laptop.Processor }}</li>
+        <li><strong>RAM:</strong> {{ laptop.RAM }} GB</li>
+        <li><strong>Storage:</strong> {{ laptop.Storage }} GB</li>
+        <li><strong>Graphics Card:</strong> {{ laptop.GraphicsCard }}</li>
+        <li><strong>Screen Size:</strong> {{ laptop.ScreenSize }} inches</li>
+      </ul>
     </div>
   </div>
 
-  <script>
-    async function addToCart(laptopId) {
-      try {
-        const response = await fetch('/add_to_cart', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ laptop_id: laptopId })
-        });
 
-        const data = await response.json();
-        if (data.success) {
-          alert('Laptop added to cart!');
-        } else {
-          alert('Failed to add to cart: ' + data.message);
-        }
-      } catch (error) {
-        alert('Error adding to cart.');
-      }
-    }
-  </script>
+  <div class="suggestions">
+    <h3>Other suggestions</h3>
+    <div class="suggestion-cards">
+      {% for s in suggestions %}
+      <div class="laptop-card" onclick="window.location.href='/laptop/{{ s.LaptopID }}'">
+        <img src="/static/assets/laptop_pictures/{{ s.LaptopID }}.jpg"
+             onerror="this.src='/static/assets/laptop_pictures/default.jpg'"
+             alt="{{ s.ModelName }}">
+        <h4>{{ s.ModelName }}</h4>
+        <p>Price: {{ s.Price }} Lei</p>
+        <button onclick="event.stopPropagation(); addToCart('{{ s.LaptopID }}')">Add to Cart</button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+
+  <script src="{{ url_for('static', filename='scripts_js/laptop_details.js') }}"></script>
+
 
 </body>
 </html>
