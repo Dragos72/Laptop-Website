@@ -78,11 +78,15 @@ function displayLaptops(laptops) {
   laptopList.innerHTML = ''; // Clear previous content
 
   laptops.forEach(laptop => {
-    // Create the laptop card
     const laptopCard = document.createElement('div');
     laptopCard.classList.add('laptop-card');
 
-    // Generate the image URL based on LaptopID
+    // Make the card clickable
+    laptopCard.addEventListener('click', () => {
+      window.location.href = `/laptop/${laptop.LaptopID}`;
+    });
+
+    // Image
     const img = document.createElement('img');
     const imagePath = `/static/assets/laptop_pictures/${laptop.LaptopID}.jpg`;
     img.src = imagePath;
@@ -92,26 +96,29 @@ function displayLaptops(laptops) {
     };
     laptopCard.appendChild(img);
 
-    // Set model name
+    // Name
     const modelName = document.createElement('h4');
     modelName.innerText = laptop.ModelName;
     laptopCard.appendChild(modelName);
 
-    // Set price
+    // Price
     const price = document.createElement('p');
     price.innerText = `Price: ${laptop.Price} Lei`;
     laptopCard.appendChild(price);
 
-    // Add to cart button
+    // Add to cart button (prevent card click redirect)
     const button = document.createElement('button');
     button.innerText = 'Add to Cart';
-    button.onclick = () => addToCart(laptop.LaptopID);
+    button.addEventListener('click', (event) => {
+      event.stopPropagation(); // prevent the click from triggering redirect
+      addToCart(laptop.LaptopID);
+    });
     laptopCard.appendChild(button);
 
-    // Append directly to the container
     laptopList.appendChild(laptopCard);
   });
 }
+
 
 
 

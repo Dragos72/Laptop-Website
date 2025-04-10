@@ -1,0 +1,29 @@
+.laptop-details-container {
+    display: flex;
+    padding: 30px;
+    gap: 40px;
+  }
+  
+  .laptop-image img {
+    width: 400px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  .laptop-info {
+    flex: 1;
+  }
+  
+  .laptop-info h1 {
+    margin-bottom: 10px;
+  }
+  
+  .specs ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .specs ul li {
+    margin-bottom: 6px;
+  }
+  

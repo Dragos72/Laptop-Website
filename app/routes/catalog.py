@@ -594,3 +594,50 @@ def update_cart_quantities():
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
+
+@catalog_blueprint.route('/laptop/<int:laptop_id>', methods=['GET'])
+def laptop_details(laptop_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Query all necessary info, including joins to Brand and Category
+        query = """
+        SELECT 
+            L.LaptopID, L.ModelName, L.Description, L.Price, L.StockQuantity,
+            L.Processor, L.RAM, L.Storage, L.GraphicsCard, L.ScreenSize,
+            B.BrandName, C.CategoryName
+        FROM Laptops L
+        JOIN Brands B ON L.BrandID = B.BrandID
+        JOIN Categories C ON L.CategoryID = C.CategoryID
+        WHERE L.LaptopID = ?;
+        """
+        cursor.execute(query, (laptop_id,))
+        row = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if not row:
+            return render_template('404.html'), 404
+
+        laptop = {
+            "LaptopID": row[0],
+            "ModelName": row[1],
+            "Description": row[2],
+            "Price": row[3],
+            "StockQuantity": row[4],
+            "Processor": row[5],
+            "RAM": row[6],
+            "Storage": row[7],
+            "GraphicsCard": row[8],
+            "ScreenSize": row[9],
+            "BrandName": row[10],
+            "CategoryName": row[11]
+        }
+
+        return render_template("laptop_details.html", laptop=laptop)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

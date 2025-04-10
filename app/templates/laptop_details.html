@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ laptop.ModelName }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/laptop_details.css') }}">
+</head>
+<body>
+
+  <div class="laptop-details-container">
+    <div class="laptop-image">
+      <img src="/static/assets/laptop_pictures/{{ laptop.LaptopID }}.jpg" alt="{{ laptop.ModelName }}">
+    </div>
+
+    <div class="laptop-info">
+      <h1>{{ laptop.ModelName }}</h1>
+      <p>{{ laptop.Description }}</p>
+      <button onclick="addToCart('{{ laptop.LaptopID }}')">Add to Cart</button>
+
+      <div class="specs">
+        <h3>Specs</h3>
+        <ul>
+          <li><strong>Brand:</strong> {{ laptop.BrandName }}</li>
+          <li><strong>Category:</strong> {{ laptop.CategoryName }}</li>
+          <li><strong>Processor:</strong> {{ laptop.Processor }}</li>
+          <li><strong>RAM:</strong> {{ laptop.RAM }} GB</li>
+          <li><strong>Storage:</strong> {{ laptop.Storage }} GB</li>
+          <li><strong>Graphics Card:</strong> {{ laptop.GraphicsCard }}</li>
+          <li><strong>Screen Size:</strong> {{ laptop.ScreenSize }} inches</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function addToCart(laptopId) {
+      try {
+        const response = await fetch('/add_to_cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ laptop_id: laptopId })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('Laptop added to cart!');
+        } else {
+          alert('Failed to add to cart: ' + data.message);
+        }
+      } catch (error) {
+        alert('Error adding to cart.');
+      }
+    }
+  </script>
+
+</body>
+</html>
